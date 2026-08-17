@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة تفكيك أجزاء الجهاز التناسلي الأنثوي</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+
+    #status {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e74c3c;
+      margin-bottom: 15px;
+      padding: 10px 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #game-container {
+      background: #ffffff;
+      border: 3px solid #bdc3c7;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+
+    svg {
+      display: block;
+      user-select: none; /* منع تحديد النص بالغلط */
+    }
+
+    .draggable {
+      cursor: grab;
+      filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.5));
+      transition: filter 0.2s;
+    }
+
+    .draggable:active {
+      cursor: grabbing;
+      filter: drop-shadow(5px 5px 8px rgba(0,0,0,0.7));
+    }
+
+    .snapped {
+      cursor: default;
+      filter: none;
+    }
+
+    /* تأثير الوميض للقطعة لما تركب صح */
+    @keyframes flash {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; filter: brightness(1.5); }
+      100% { opacity: 1; }
+    }
+    .flash-effect {
+      animation: flash 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>علم الأحياء: رتب أجزاء الرسمة 🧬</h1>
+  <div id="status">القطع المتبقية: 5 🧩</div>
+
+  <div id="game-container">
+    <!-- لوحة الرسم واللعب: العرض 1000 والطول 600 -->
+    <svg id="svgBoard" width="1000" height="600" viewBox="0 0 1000 600">
+      
+      <defs>
+        <!-- تعريف الصورة الأصلية مالتك -->
+        <image id="baseImage" href="5339133305644847014_121.jpg" width="1000" height="600" preserveAspectRatio="xMidYMid slice" />
+
+        <!-- أدوات القص (5 قطع) برمجياً -->
+        <!-- القطعة 1: الجزء الأيسر (قناة فالوب والمبيض الأيسر) -->
+        <clipPath id="clip1"><rect x="150" y="180" width="230" height="180" rx="15" /></clipPath>
+        
+        <!-- القطعة 2: الجزء الأوسط (الرحم) -->
+        <clipPath id="clip2"><rect x="380" y="200" width="220" height="150" rx="15" /></clipPath>
+        
+        <!-- القطعة 3: الجزء الأيمن (قناة فالوب والمبيض الأيمن) -->
+        <clipPath id="clip3"><rect x="600" y="180" width="250" height="180" rx="15" /></clipPath>
+        
+        <!-- القطعة 4: الجزء السفلي (عنق الرحم والمهبل) -->
+        <clipPath id="clip4"><rect x="420" y="350" width="140" height="200" rx="15" /></clipPath>
+        
+        <!-- القطعة 5: الجزء العلوي (قاع الرحم / ملاحظات) -->
+        <clipPath id="clip5"><rect x="350" y="50" width="280" height="150" rx="15" /></clipPath>
+      </defs>
+
+      <!-- 1. الخلفية الشفافة (تكون كدليل أو خريطة للطالب) -->
+      <use href="#baseImage" opacity="0.2" />
+
+      <!-- رسم حدود وهمية (Dash) للمناطق الصحيحة حتى الطالب يعرف وين يخليها -->
+      <rect x="150" y="180" width="230" height="180" rx="15" fill="none" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5" />
+      <rect x="380" y="200" width="220" height="150" rx="15" fill="none" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5" />
+      <rect x="600" y="180" width="250" height="180" rx="15" fill="none" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5" />
+      <rect x="420" y="350" width="140" height="200" rx="15" fill="none" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5" />
+      <rect x="350" y="50" width="280" height="150" rx="15" fill="none" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5" />
+
+      <!-- 2. القطع القابلة للسحب (مبعثرة برمجياً عبر transform) -->
+      <!-- tx و ty تمثل الإحداثيات الوهمية للقطعة، و data-snapped لمعرفة هل تم تركيبها أم لا -->
+      <g class="draggable piece" clip-path="url(#clip1)" transform="translate(-100, -150)" data-tx="-100" data-ty="-150" data-snapped="false">
+        <use href="#baseImage" />
+      </g>
+      
+      <g class="draggable piece" clip-path="url(#clip2)" transform="translate(300, 200)" data-tx="300" data-ty="200" data-snapped="false">
+        <use href="#baseImage" />
+      </g>
+
+      <g class="draggable piece" clip-path="url(#clip3)" transform="translate(-200, 220)" data-tx="-200" data-ty="220" data-snapped="false">
+        <use href="#baseImage" />
+      </g>
+
+      <g class="draggable piece" clip-path="url(#clip4)" transform="translate(400, -150)" data-tx="400" data-ty="-150" data-snapped="false">
+        <use href="#baseImage" />
+      </g>
+
+      <g class="draggable piece" clip-path="url(#clip5)" transform="translate(-300, 350)" data-tx="-300" data-ty="350" data-snapped="false">
+        <use href="#baseImage" />
+      </g>
+
+    </svg>
+  </div>
+
+  <script>
+    const svg = document.getElementById('svgBoard');
+    const pieces = document.querySelectorAll('.piece');
+    const statusText = document.getElementById('status');
+    
+    let selectedElement = null;
+    let offset = { x: 0, y: 0 };
+    let piecesLeft = 5;
+
+    // مسافة الجذب: إذا الطالب قرب القطعة بنسبة 40 بكسل من مكانها، تلزك بمكانها
+    const snapTolerance = 40; 
+
+    // دالة تحويل إحداثيات الماوس إلى إحداثيات الـ SVG
+    function getMousePosition(evt) {
+      let CTM = svg.getScreenCTM();
+      return {
+        x: (evt.clientX - CTM.e) / CTM.a,
+        y: (evt.clientY - CTM.f) / CTM.d
+      };
+    }
+
+    // بدء السحب
+    function startDrag(evt) {
+      if (evt.target.parentNode.classList.contains('draggable')) {
+        selectedElement = evt.target.parentNode;
+        
+        // إذا القطعة راكبة صح، ما نخلي الطالب يسحبها بعد
+        if(selectedElement.getAttribute('data-snapped') === 'true') {
+          selectedElement = null;
+          return;
+        }
+
+        // جلب القطعة للأمام (لكي لا تتغطى بقطع أخرى)
+        svg.appendChild(selectedElement);
+
+        let mousePos = getMousePosition(evt);
+        let currentTx = parseFloat(selectedElement.getAttribute('data-tx'));
+        let currentTy = parseFloat(selectedElement.getAttribute('data-ty'));
+
+        offset.x = mousePos.x - currentTx;
+        offset.y = mousePos.y - currentTy;
+      }
+    }
+
+    // أثناء السحب
+    function drag(evt) {
+      if (selectedElement) {
+        evt.preventDefault();
+        let mousePos = getMousePosition(evt);
+        
+        let newTx = mousePos.x - offset.x;
+        let newTy = mousePos.y - offset.y;
+
+        // تحديث مكان القطعة
+        selectedElement.setAttribute('transform', `translate(${newTx}, ${newTy})`);
+        selectedElement.setAttribute('data-tx', newTx);
+        selectedElement.setAttribute('data-ty', newTy);
+      }
+    }
+
+    // إفلات القطعة (نهاية السحب)
+    function endDrag(evt) {
+      if (selectedElement) {
+        let currentTx = parseFloat(selectedElement.getAttribute('data-tx'));
+        let currentTy = parseFloat(selectedElement.getAttribute('data-ty'));
+
+        // المكان الصحيح للقطعة دائماً هو (0, 0) لأننا نستخدم نفس الإحداثيات الأصلية
+        let distance = Math.hypot(currentTx - 0, currentTy - 0);
+
+        if (distance < snapTolerance) {
+          // تركيب القطعة بنجاح!
+          selectedElement.setAttribute('transform', `translate(0, 0)`);
+          selectedElement.setAttribute('data-tx', 0);
+          selectedElement.setAttribute('data-ty', 0);
+          selectedElement.setAttribute('data-snapped', 'true');
+          
+          // تغيير شكلها وإضافة تأثير
+          selectedElement.classList.remove('draggable');
+          selectedElement.classList.add('snapped', 'flash-effect');
+
+          piecesLeft--;
+          if(piecesLeft > 0) {
+            statusText.innerText = `عاشت ايدك! بقت ${piecesLeft} قطع 🧩`;
+            statusText.style.color = '#27ae60';
+          } else {
+            statusText.innerText = "ألف مبروك! كملت الرسمة كلها 🏆🎉";
+            statusText.style.color = '#2980b9';
+            statusText.style.background = '#f1c40f';
+          }
+        }
+        selectedElement = null;
+      }
+    }
+
+    // تفعيل الأحداث للماوس
+    svg.addEventListener('mousedown', startDrag);
+    svg.addEventListener('mousemove', drag);
+    svg.addEventListener('mouseup', endDrag);
+    svg.addEventListener('mouseleave', endDrag);
+
+    // تفعيل الأحداث للموبايل (Touch)
+    svg.addEventListener('touchstart', (e) => startDrag(e.touches[0]), {passive: false});
+    svg.addEventListener('touchmove', (e) => drag(e.touches[0]), {passive: false});
+    svg.addEventListener('touchend', endDrag);
+
+  </script>
+</body>
+</html>
