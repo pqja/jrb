@@ -1,1765 +1,1143 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="light">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <!-- منع التكبير والتصغير ليعمل كتطبيق حقيقي -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق عيادة الأسنان</title>
+    <title>منصة درب التعليمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Tajawal', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#3b82f6',
-                        darkBg: '#0f172a',
-                        darkCard: '#1e293b'
-                    }
-                }
-            }
-        }
-    </script>
     <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #10B981;
+            --bg-color: #F8FAFC; /* لون خلفية أريح للعين */
+            --text-main: #1F2937;
+        }
+
         body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            /* منع النسخ واللصق والتحديد */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            -webkit-touch-callout: none;
             overscroll-behavior-y: none;
-            background-color: #f8fafc;
-            overflow: hidden;
         }
 
-        input, textarea {
-            -webkit-user-select: text !important;
-            -moz-user-select: text !important;
-            -ms-user-select: text !important;
-            user-select: text !important;
-            cursor: text !important;
-            pointer-events: auto !important;
+        input, textarea, select {
+            font-size: 16px !important;
+            -webkit-user-select: auto;
+            user-select: auto;
         }
 
-        .dark body {
-            background-color: #0f172a;
-            color: #f1f5f9;
-        }
-
-        #app-container {
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            max-width: 600px;
-            margin: 0 auto;
-            position: relative;
-            background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-        }
-
-        .dark #app-container {
-            background: #0f172a;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        #main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 90px;
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
-        }
-        #main-content::-webkit-scrollbar {
-            display: none;
-        }
-
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            z-index: 50;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .dark .bottom-nav {
-            background: rgba(30, 41, 59, 0.85);
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        @media (max-height: 500px) {
-            .bottom-nav {
-                display: none !important;
-            }
-        }
-
-        .page-transition {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* تحسين شاشة تسجيل الدخول */
+        .auth-bg {
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #4338ca);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .dark .glass-card {
-            background: #1e293b;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(17, 24, 39, 0.7); /* لون داكن شبه شفاف */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .date-btn.selected {
-            background-color: #3b82f6;
+        .input-dark {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.1);
             color: white;
-            transform: scale(1.05);
-            border-color: #3b82f6;
         }
-        .time-btn.selected {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
+        .input-dark::placeholder {
+            color: rgba(255,255,255,0.5);
         }
-        .time-btn:disabled {
-            opacity: 0.5;
-            background-color: #e2e8f0;
-            color: #94a3b8;
-            border-color: transparent;
-            cursor: not-allowed;
-        }
-        .dark .time-btn:disabled {
-            background-color: #334155;
-            color: #64748b;
+        .input-dark:focus {
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.6);
         }
 
-        .notification-dot {
-            position: absolute;
-            top: -2px;
-            right: 25%;
-            width: 8px;
-            height: 8px;
-            background-color: #ef4444;
-            border-radius: 50%;
-            display: none;
-        }
-        .has-notification .notification-dot {
-            display: block;
-            animation: pulse 2s infinite;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .bottom-nav {
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
         }
 
-        .free-page {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active .nav-icon {
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+
+        video {
             width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 100;
-            display: none;
-            flex-direction: column;
+            background: #000;
         }
-        .dark .free-page {
-            background: #0f172a;
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(10px);
+        }
+
+        .chat-msg-user { background: var(--primary); color: white; border-radius: 16px 16px 0 16px; }
+        .chat-msg-bot { background: white; color: var(--text-main); border-radius: 16px 16px 16px 0; border: 1px solid #e5e7eb; }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px; height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Splash Screen Animation */
+        .splash-logo {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .7; transform: scale(1.05); }
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased">
+<body class="h-screen w-screen overflow-hidden flex flex-col relative">
 
-    <div id="loader" class="fixed inset-0 bg-white dark:bg-slate-900 z-[999] flex flex-col items-center justify-center transition-opacity duration-500">
-        <img id="splash-image" src="" alt="Doctor" class="w-40 h-40 rounded-2xl object-cover shadow-2xl mb-4 hidden border-4 border-blue-500 animate-pulse">
-        <i id="splash-icon" class="fa-solid fa-tooth text-6xl text-blue-500 animate-bounce mb-4"></i>
-        <div id="splash-name" class="text-2xl font-bold dark:text-white text-blue-600 mt-2">جاري التحميل...</div>
-    </div>
+    <!-- التنبيهات -->
+    <div id="toast" class="toast px-6 py-3 rounded-full text-white font-semibold shadow-lg"></div>
 
-    <script>
-        try {
-            const savedSplash = localStorage.getItem('my_clinic_splash');
-            if (savedSplash) {
-                const splashData = JSON.parse(savedSplash);
-                if (splashData.splashImg && splashData.splashName) {
-                    document.getElementById('splash-icon').classList.add('hidden');
-                    const img = document.getElementById('splash-image');
-                    img.src = splashData.splashImg;
-                    img.classList.remove('hidden');
-                    document.getElementById('splash-name').innerText = splashData.splashName;
-                }
-            }
-        } catch(e) {}
-    </script>
-
-    <div id="welcome-screen" class="fixed inset-0 bg-gradient-to-br from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 z-[100] hidden flex-col items-center justify-center p-6">
-        <div class="glass-card rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <div class="w-24 h-24 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <i class="fa-solid fa-tooth text-5xl text-blue-500 dark:text-blue-300"></i>
-            </div>
-            <h1 class="text-2xl font-bold mb-4 dark:text-white">مرحباً بك في العيادة</h1>
-            <p class="text-gray-600 dark:text-gray-300 mb-8 font-medium">هل ترغب في حجز موعد لدينا؟</p>
-            <button id="btn-yes-book" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-2xl transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2 text-lg">
-                <span>نعم، أرغب بالحجز</span>
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
+    <!-- نافذة منبثقة (Modal) -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div id="modalContent" class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
         </div>
     </div>
 
-    <div id="app-container" class="hidden">
-        
-        <header class="pt-4 pb-2 px-5 flex justify-between items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 border-b border-gray-100 dark:border-slate-800 shadow-sm">
-    <div>
-        <h2 id="header-title" class="text-lg font-bold dark:text-white leading-tight">حجز موعد</h2>
-        <p id="header-subtitle" class="text-[10px] text-gray-500 dark:text-gray-400">احجز موعدك بسهولة</p>
+    <!-- 0. شاشة البداية (Splash Screen) -->
+    <div id="splashScreen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-28 h-28 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl splash-logo mb-6">
+            <i class="fas fa-graduation-cap text-6xl text-white"></i>
+        </div>
+        <h1 class="text-3xl font-black text-gray-800 tracking-tight">منصة درب</h1>
+        <p class="text-gray-500 mt-2 font-semibold">طريقك نحو التفوق</p>
+        <div class="loader mt-8 border-indigo-200 border-t-indigo-600"></div>
     </div>
-    <div class="w-10 h-10 bg-blue-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-blue-500 shadow-inner">
-        <i class="fa-solid fa-tooth text-base"></i>
-    </div>
-    <div id="hidden-admin-btn" class="absolute top-1 left-1 w-10 h-10 opacity-0 cursor-default"></div>
-</header>
 
-        <main id="main-content" class="p-6 relative">
-            
-            <div id="tab-book" class="page-transition">
-                <div id="step-1-and-2" class="page-transition">
-                    <h3 class="text-lg font-bold mb-4 dark:text-white">اختر نوع الخدمة</h3>
-                    <div id="services-grid" class="grid grid-cols-3 gap-3 mb-6">
-                        </div>
-
-                    <h3 class="text-lg font-bold mb-4 dark:text-white">اختر التاريخ</h3>
-                    <div class="flex overflow-x-auto gap-3 pb-4 hide-scrollbar" id="dates-container">
-                    </div>
-
-                    <div id="day-status-msg" class="text-center py-4 text-red-500 font-bold hidden bg-red-50 dark:bg-red-900/20 rounded-xl mb-4"></div>
-
-                    <div id="time-selection-area" class="hidden">
-                        <h3 class="text-lg font-bold mt-2 mb-4 dark:text-white">اختر الوقت</h3>
-                        <div id="times-grid" class="grid grid-cols-3 gap-3">
-                        </div>
-                    </div>
-
-                    <button id="btn-next-step3" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-8 shadow-lg active:scale-95 transition-transform opacity-50 cursor-not-allowed pointer-events-none">
-                        الرجاء اختيار الخدمة والتاريخ والوقت
-                    </button>
+    <!-- 1. شاشة تسجيل الدخول / إنشاء حساب (تم تحسين التصميم) -->
+    <div id="authScreen" class="absolute inset-0 z-40 auth-bg flex items-center justify-center p-4 overflow-y-auto hidden">
+        <div class="glass-card w-full max-w-sm rounded-[2rem] p-8 relative">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
+                    <i class="fas fa-graduation-cap text-4xl text-white"></i>
                 </div>
-
-                <div id="step-3" class="hidden mt-8">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-bold dark:text-white">بيانات المريض</h3>
-                        <button id="btn-back-step2" class="text-sm text-blue-500 flex items-center gap-1"><i class="fa-solid fa-rotate-right"></i> رجوع</button>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div id="clinic-address-display" class="hidden bg-blue-50 dark:bg-slate-800 p-4 rounded-xl border border-blue-100 dark:border-slate-700 text-center shadow-sm">
-    <div class="flex items-center justify-center gap-2 mb-2">
-        <i class="fa-solid fa-location-dot text-blue-500 text-xl animate-bounce"></i>
-        <span class="font-bold text-gray-700 dark:text-gray-300">( عنوان العيادة )</span>
-    </div>
-    <p class="font-bold dark:text-white text-sm" id="clinic-address-text"></p>
-</div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">اسم المريض الكامل</label>
-                            <input type="text" id="patient-name" class="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="اكتب اسمك هنا...">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">رقم الهاتف</label>
-                            <input type="tel" id="patient-phone" class="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="07...">
-                        </div>
-                    </div>
-
-                    <button id="btn-confirm-book" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl mt-8 shadow-lg active:scale-95 transition-transform flex justify-center items-center gap-2">
-                        <span>تأكيد الحجز</span>
-                        <i class="fa-solid fa-check-circle"></i>
-                    </button>
-                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">مرحباً بك</h1>
+                <p class="text-gray-300 text-sm">سجل دخولك للمتابعة</p>
             </div>
 
-            <div id="tab-bookings" class="hidden page-transition">
-                <div id="my-bookings-container" class="space-y-4">
-                    <div class="text-center py-10 text-gray-500 dark:text-gray-400">
-                        <i class="fa-regular fa-calendar-xmark text-4xl mb-3 opacity-50"></i>
-                        <p>لا توجد حجوزات حالياً</p>
-                    </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
+                </div>
+                <div>
+                    <input type="password" id="loginPassword" placeholder="الرمز السري" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg hover:bg-indigo-500 transition transform active:scale-95 mt-2">تسجيل الدخول</button>
+                <p class="text-center text-gray-300 text-sm mt-6 cursor-pointer hover:text-white transition" onclick="toggleAuth('signup')">لا تملك حساب؟ <span class="font-bold text-indigo-400">أنشئ حساب الآن</span></p>
+            </form>
+
+            <form id="signupForm" class="space-y-4 hidden">
+                <div>
+                    <input type="text" id="signupName" placeholder="الاسم الثلاثي" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
+                </div>
+                <div class="relative">
+                    <span class="absolute left-4 top-3.5 text-gray-400" dir="ltr">+964</span>
+                    <input type="tel" id="signupPhone" placeholder="07XXXXXXXXX" pattern="07[0-9]{9}" title="يجب أن يبدأ ب 07 ويتكون من 11 رقم" class="w-full input-dark rounded-xl pl-16 pr-4 py-3 focus:outline-none transition text-right" required>
+                </div>
+                <div>
+                    <input type="email" id="signupEmail" placeholder="البريد الإلكتروني" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
+                </div>
+                <div>
+                    <input type="password" id="signupPassword" placeholder="رمز الحساب" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg hover:bg-indigo-500 transition transform active:scale-95 mt-2">إنشاء الحساب</button>
+                <p class="text-center text-gray-300 text-sm mt-6 cursor-pointer hover:text-white transition" onclick="toggleAuth('login')">لديك حساب؟ <span class="font-bold text-indigo-400">سجل دخولك</span></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. واجهة التطبيق الرئيسية -->
+    <div id="mainApp" class="hidden flex-1 h-full flex flex-col relative pb-[70px]">
+        <header class="bg-white shadow-sm px-4 py-3 flex justify-between items-center z-10 rounded-b-2xl">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 shadow-inner">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-gray-800 text-lg leading-tight" id="headerTitle">المحاضرات</h2>
+                    <p class="text-xs text-gray-500" id="headerSub">منصة درب</p>
                 </div>
             </div>
+            <button id="backBtn" class="hidden w-10 h-10 bg-gray-100 rounded-full items-center justify-center text-gray-600 active:bg-gray-200 transition" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </header>
 
-            <div id="tab-settings" class="hidden page-transition">
-                <div class="space-y-4">
-                    <button onclick="openFreePage('page-rating')" class="w-full flex items-center justify-between p-4 glass-card rounded-2xl active:scale-95 transition-transform">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center text-lg"><i class="fa-solid fa-star"></i></div>
-                            <span class="font-bold dark:text-white">تقييم الدكتور</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-left text-gray-400"></i>
-                    </button>
-
-                    <button id="btn-toggle-theme" class="w-full flex items-center justify-between p-4 glass-card rounded-2xl active:scale-95 transition-transform">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center text-lg" id="theme-icon-container"><i class="fa-solid fa-moon"></i></div>
-                            <span class="font-bold dark:text-white" id="theme-text">الوضع الليلي</span>
-                        </div>
-                        <div class="w-12 h-6 bg-gray-200 rounded-full relative transition-colors duration-300" id="theme-toggle-bg">
-                            <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5 transition-transform duration-300" id="theme-toggle-knob"></div>
-                        </div>
-                    </button>
-
-                    <button id="btn-admin-panel" onclick="openFreePage('page-admin')" class="hidden w-full flex items-center justify-between p-4 glass-card rounded-2xl bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg active:scale-95 transition-transform mt-8 border-none">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg"><i class="fa-solid fa-crown"></i></div>
-                            <span class="font-bold">لوحة التحكم (المالك)</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-
-                    <a href="https://wa.me/9647814728746" target="_blank" class="w-full flex items-center justify-between p-4 glass-card rounded-2xl active:scale-95 transition-transform mt-8 border border-green-100 dark:border-slate-700 text-green-600 dark:text-green-400">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-slate-800 flex items-center justify-center text-lg"><i class="fa-brands fa-whatsapp"></i></div>
-                            <span class="font-bold">التواصل مع الدعم</span>
-                        </div>
-                        <i class="fa-solid fa-headset"></i>
-                    </a>
-
-                    <button id="btn-logout" class="w-full flex items-center justify-between p-4 glass-card rounded-2xl active:scale-95 transition-transform mt-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-lg"><i class="fa-solid fa-right-from-bracket"></i></div>
-                            <span class="font-bold text-red-500">تسجيل الخروج</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
+        <main id="contentArea" class="flex-1 overflow-y-auto p-4 scroll-smooth bg-gray-50/50">
         </main>
 
-        <nav class="bottom-nav pb-4 pt-2 px-6 flex justify-between items-center rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1 text-blue-600" data-target="tab-book">
-                <i class="fa-solid fa-calendar-plus text-xl mb-1"></i>
-                <span class="text-xs font-bold">حجز موعد</span>
+        <nav class="bottom-nav bg-white fixed bottom-0 w-full h-[70px] rounded-t-3xl flex justify-around items-center px-2 z-20">
+            <button class="nav-item active flex flex-col items-center justify-center w-20 h-full" onclick="switchTab('lectures', this)">
+                <div class="nav-icon text-xl mb-1"><i class="fas fa-play-circle"></i></div>
+                <span class="text-[10px] font-bold">المحاضرات</span>
             </button>
-            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500 relative" data-target="tab-bookings" id="nav-bookings-btn">
-                <div class="notification-dot"></div>
-                <i class="fa-solid fa-list-check text-xl mb-1"></i>
-                <span class="text-xs font-bold">الحجوزات</span>
+            <button class="nav-item flex flex-col items-center justify-center w-20 h-full relative" onclick="switchTab('ai', this)">
+                <div class="nav-icon text-xl mb-1"><i class="fas fa-robot"></i></div>
+                <span class="text-[10px] font-bold">المساعد الذكي</span>
             </button>
-            <button class="nav-item flex-1 flex flex-col items-center justify-center gap-1 text-gray-400 dark:text-gray-500" data-target="tab-settings">
-                <i class="fa-solid fa-gear text-xl mb-1"></i>
-                <span class="text-xs font-bold">الإعدادات</span>
+            <button class="nav-item flex flex-col items-center justify-center w-20 h-full" onclick="switchTab('profile', this)">
+                <div class="nav-icon text-xl mb-1"><i class="fas fa-user"></i></div>
+                <span class="text-[10px] font-bold">حسابي</span>
             </button>
         </nav>
     </div>
 
-    <div id="modal-rating" class="fixed inset-0 bg-black/60 z-[400] hidden items-center justify-center p-6 backdrop-blur-sm">
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl max-w-sm w-full text-center shadow-2xl relative">
-        <button onclick="closeRatingModal()" class="absolute top-4 left-4 w-8 h-8 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center dark:text-white"><i class="fa-solid fa-times"></i></button>
-        <div class="w-16 h-16 bg-blue-100 rounded-full mx-auto flex items-center justify-center mb-4">
-            <i class="fa-solid fa-user-doctor text-3xl text-blue-500"></i>
-        </div>
-        <h3 class="font-bold text-lg dark:text-white mb-4">كيف كانت تجربتك؟</h3>
-        
-        <div class="flex justify-center gap-2 mb-6 text-2xl" id="star-rating-container">
-            <i class="fa-solid fa-star text-gray-300 cursor-pointer transition-colors" data-val="1"></i>
-            <i class="fa-solid fa-star text-gray-300 cursor-pointer transition-colors" data-val="2"></i>
-            <i class="fa-solid fa-star text-gray-300 cursor-pointer transition-colors" data-val="3"></i>
-            <i class="fa-solid fa-star text-gray-300 cursor-pointer transition-colors" data-val="4"></i>
-            <i class="fa-solid fa-star text-gray-300 cursor-pointer transition-colors" data-val="5"></i>
-        </div>
-        <textarea id="rating-comment" rows="3" class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-4 resize-none text-sm" placeholder="اكتب تعليقك هنا (اختياري)..."></textarea>
-        <button id="btn-submit-rating" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-transform">إرسال التقييم</button>
-    </div>
-</div>
-
-    <div id="page-admin" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 bg-blue-600 text-white">
-            <button onclick="closeFreePage('page-admin')" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right"></i></button>
-            <h2 class="text-xl font-bold">لوحة التحكم</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto bg-gray-50 dark:bg-slate-900">
-            <!-- شبكة الأزرار 3 أعمدة مثل الصورة -->
-            <div class="grid grid-cols-3 gap-4">
-                
-                <button onclick="openFreePage('admin-today')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-green-100 text-green-500 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-calendar-day"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">حجوزات اليوم</span>
-                </button>
-
-                <button onclick="openFreePage('admin-splash')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">الإحصائيات</span>
-                </button>
-
-                <button onclick="openFreePage('admin-loyalty')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-gift"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">المكافآت</span>
-                </button>
-
-                <button onclick="openFreePage('admin-address')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-teal-100 text-teal-500 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-location-dot"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">عنوان العيادة</span>
-                </button>
-
-                <button onclick="openFreePage('admin-subscription')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-credit-card"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">الاشتراك</span>
-                </button>
-
-                <button onclick="openFreePage('admin-holidays')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-red-50 text-red-400 flex items-center justify-center text-xl">
-                        <i class="fa-regular fa-calendar-xmark"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">أيام العطل</span>
-                </button>
-
-                <button onclick="openFreePage('admin-times')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center text-xl">
-                        <i class="fa-regular fa-clock"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">أوقات الدوام</span>
-                </button>
-
-                <button onclick="openFreePage('admin-ratings')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-star-half-stroke"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">التقييمات</span>
-                </button>
-
-                <button onclick="openFreePage('admin-services')" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform aspect-square">
-                    <div class="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-list"></i>
-                    </div>
-                    <span class="font-bold text-[11px] dark:text-white">الخدمات</span>
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="modal-payment" class="fixed inset-0 bg-black/60 z-[300] hidden flex-col items-center justify-center p-6 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modal-payment-content">
-        <h3 class="text-xl font-bold mb-2 dark:text-white">طريقة الدفع</h3>
-        <p class="text-sm text-gray-500 mb-6">هل ترغب في دفع الكشفية نقداً أم عبر الماستر كارد؟</p>
-        
-        <div class="space-y-4">
-            <button id="btn-pay-cash" class="w-full border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-slate-800 dark:text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-all hover:border-green-500">
-                <i class="fa-solid fa-money-bill-wave text-green-500 text-xl"></i> الدفع نقداً بالعيادة
-            </button>
-            
-            <div class="border-2 border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 rounded-xl p-4 text-left dir-ltr relative">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold text-gray-400">MasterCard</span>
-                    <i class="fa-brands fa-cc-mastercard text-2xl text-blue-500"></i>
-                </div>
-                <div class="text-xl font-mono font-bold tracking-widest text-slate-800 dark:text-white text-center mb-2">1810354082</div>
-                <p class="text-[10px] text-red-500 text-center text-right dir-rtl font-bold mb-3">حول المبلغ وخذ سكرين، سيتم طلب السكرين عند وصولك للدكتور.</p>
-                <button id="btn-pay-card" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg active:scale-95 transition-transform">
-                    تم التحويل (حفظ الحجز)
-                </button>
-            </div>
-        </div>
-        <button onclick="closePaymentModal()" class="mt-4 text-gray-400 text-sm font-bold underline">إلغاء والعودة</button>
-    </div>
-</div>
-
-    <div id="modal-booking-success" class="fixed inset-0 bg-black/50 z-[300] hidden flex-col items-center justify-center p-6 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modal-booking-content">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fa-solid fa-check-double text-4xl text-green-500"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-4 dark:text-white">تم الحجز بنجاح!</h3>
-            <p class="text-red-500 font-bold mb-4 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl leading-relaxed text-sm">
-                يجب الضغط على <span class="underline">وصلت</span> من قسم الحجوزات قبل قدومك إلى العيادة لضمان حجزك، ولا تنسى أن تأتي قبل نصف ساعة من الموعد.
-            </p>
-            <button onclick="closeSuccessModal()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl active:scale-95 transition-transform">حسناً، فهمت</button>
-        </div>
-    </div>
-
-    <div id="modal-qr" class="fixed inset-0 bg-black/60 z-[300] hidden items-center justify-center p-6 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl max-w-xs w-full text-center shadow-2xl relative">
-            <button onclick="closeQRModal()" class="absolute top-4 left-4 w-8 h-8 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center dark:text-white"><i class="fa-solid fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-6 dark:text-white">تذكرة الحجز (باركود)</h3>
-            <div class="bg-white p-2 rounded-xl inline-block mx-auto mb-4 border-2 border-gray-200">
-                <img id="qr-image" src="" alt="QR Code" class="w-48 h-48">
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">أبرز هذا الباركود عند وصولك للعيادة</p>
-        </div>
-    </div>
-
-    <div id="admin-splash" class="free-page">
-        <header class="pt-5 pb-3 px-5 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-            <button onclick="closeFreePage('admin-splash')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">التخصيص والإحصائيات</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto space-y-8">
-            <div class="bg-gray-50 dark:bg-slate-800 p-5 rounded-2xl">
-                <h3 class="font-bold mb-4 dark:text-white border-b pb-2 border-gray-200 dark:border-slate-700">صورة بداية التطبيق</h3>
-                
-                <label class="block mb-2 text-sm font-bold text-gray-700 dark:text-gray-300">اختر صورة الدكتور من الهاتف:</label>
-                <input type="file" id="setting-splash-file" accept="image/*" class="w-full p-2 mb-3 bg-white dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600 text-sm">
-                
-                <!-- عرض الصورة المصغرة بعد اختيارها -->
-                <div class="flex justify-center mb-4">
-                    <img id="splash-preview" src="" class="hidden w-24 h-24 rounded-full object-cover border-2 border-blue-500 shadow-sm" alt="معاينة">
-                </div>
-
-                <input type="text" id="setting-splash-name" class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white mb-4" placeholder="اسم الدكتور أسفل الصورة">
-                <button id="btn-save-splash" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md">حفظ التغييرات</button>
-            </div>
-            
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm">
-                <h3 class="font-bold mb-4 dark:text-white flex items-center gap-2"><i class="fa-solid fa-chart-pie text-blue-500"></i> إحصائيات التطبيق</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl text-center">
-                        <div class="text-2xl font-black text-blue-600 mb-1" id="stat-patients">0</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">إجمالي المرضى</div>
-                    </div>
-                    <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl text-center">
-                        <div class="text-2xl font-black text-green-600 mb-1" id="stat-bookings">0</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">إجمالي الحجوزات</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="admin-address" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-address')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">عنوان العيادة</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="bg-gray-50 dark:bg-slate-800 p-5 rounded-2xl">
-                <label class="block text-sm font-bold mb-3 dark:text-white">اكتب عنوان العيادة ليظهر في صفحة الحجز:</label>
-                <textarea id="setting-clinic-address" rows="3" class="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white mb-4 resize-none" placeholder="مثال: بغداد، المنصور، شارع 14 رمضان، عمارة الأطباء..."></textarea>
-                <button id="btn-save-address" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md">حفظ العنوان</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="admin-subscription" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-subscription')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">الاشتراك الشهري</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto text-center">
-            <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 mt-6">
-                <i class="fa-solid fa-credit-card text-4xl text-red-500"></i>
-            </div>
-            <h3 class="text-lg font-bold mb-2 dark:text-white">تجديد اشتراك التطبيق</h3>
-            <p class="text-gray-500 text-sm mb-8 px-4">يرجى تحويل مبلغ الاشتراك الشهري لضمان استمرار عمل التطبيق وقواعد البيانات بدون توقف.</p>
-            
-            <div class="bg-gray-50 dark:bg-slate-800 p-5 rounded-2xl mb-8 text-left dir-ltr relative border border-gray-200 dark:border-slate-700">
-                <span class="absolute top-2 right-4 text-xs font-bold text-gray-400">MasterCard</span>
-                <div class="text-2xl font-mono font-bold tracking-widest text-slate-800 dark:text-white mt-4 text-center">
-                    1810354082
-                </div>
-            </div>
-
-            <p class="text-sm font-bold text-green-600 dark:text-green-400 mb-4">بعد التحويل، يرجى إرسال صورة الإيصال (سكرين شوت) عبر الواتساب:</p>
-            <a href="https://wa.me/9647783163464" target="_blank" class="block w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-transform">
-                <i class="fa-brands fa-whatsapp ml-2"></i> إرسال السكرين للمطور
-            </a>
-        </div>
-    </div>
-
-    <div id="admin-loyalty" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-loyalty')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">نظام الحجوزات المجانية</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-2xl border border-orange-200 dark:border-orange-900/50 mb-6">
-                <p class="text-sm text-orange-800 dark:text-orange-200 leading-relaxed">
-                    فعّل هذا النظام لمنح المريض حجزاً مجانياً بعد عدد معين من الحجوزات. الحجز المجاني سيظهر لك بلون مميز في "حجوزات اليوم".
-                </p>
-            </div>
-            
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
-                <div class="flex items-center justify-between mb-6">
-                    <span class="font-bold dark:text-white">تفعيل نظام المكافآت</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="setting-loyalty-toggle" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-[100%] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-500"></div>
-                    </label>
-                </div>
-                
-                <div id="loyalty-count-container" class="border-t border-gray-100 dark:border-slate-700 pt-4">
-                    <label class="block text-sm font-bold mb-2 dark:text-white">اجعل الحجز مجاني بعد كم حجز؟</label>
-                    <input type="number" id="setting-loyalty-count" min="1" class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 dark:text-white mb-4" placeholder="مثال: 6 (يعني السابع مجاني)">
-                </div>
-                
-                <button id="btn-save-loyalty" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition-colors">حفظ التغييرات</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="admin-today" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center justify-between border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
-            <div class="flex items-center gap-4">
-                <button onclick="closeFreePage('admin-today')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-                <h2 class="text-xl font-bold dark:text-white">حجوزات اليوم</h2>
-            </div>
-            <div class="text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded-lg" id="today-date-display"></div>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto bg-gray-50 dark:bg-slate-900">
-            <div id="admin-today-list" class="space-y-4">
-                </div>
-        </div>
-    </div>
-
-    <div id="admin-holidays" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-holidays')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">التحكم في التاريخ</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-2xl mb-6">
-                <label class="block text-sm font-bold mb-2 dark:text-white">اختر يوماً لجعله عطلة</label>
-                <input type="date" id="holiday-date" class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-700 mb-3 bg-white dark:bg-slate-700 dark:text-white">
-                <input type="text" id="holiday-note" placeholder="ملاحظة (مثال: عطلة رسمية)" class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-700 mb-4 bg-white dark:bg-slate-700 dark:text-white">
-                <button id="btn-add-holiday" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md">حفظ العطلة</button>
-            </div>
-            <h3 class="font-bold mb-3 dark:text-white">أيام العطل المسجلة:</h3>
-            <div id="holidays-list" class="space-y-3"></div>
-        </div>
-    </div>
-
-    <div id="admin-times" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-times')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">تعديل الأوقات</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="bg-gray-50 dark:bg-slate-800 p-5 rounded-2xl space-y-5">
-                <div>
-                    <label class="block text-sm font-bold mb-2 dark:text-white">يبدأ الحجز الساعة:</label>
-                    <div class="flex gap-2">
-                        <input type="number" id="setting-start-time" min="1" max="12" class="w-2/3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white outline-none" placeholder="مثال: 4">
-                        <select id="setting-start-ampm" class="w-1/3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white outline-none font-bold">
-                            <option value="AM">صباحاً (ص)</option>
-                            <option value="PM" selected>مساءً (م)</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 dark:text-white">ينتهي الحجز الساعة:</label>
-                    <div class="flex gap-2">
-                        <input type="number" id="setting-end-time" min="1" max="12" class="w-2/3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white outline-none" placeholder="مثال: 9">
-                        <select id="setting-end-ampm" class="w-1/3 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white outline-none font-bold">
-                            <option value="AM">صباحاً (ص)</option>
-                            <option value="PM" selected>مساءً (م)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="pt-4 border-t border-gray-200 dark:border-slate-700">
-                    <label class="block text-sm font-bold mb-2 dark:text-white">عدد المرضى المسموح لكل ساعة:</label>
-                    <input type="number" id="setting-max-per-slot" min="1" class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 dark:text-white" placeholder="مثال: 6">
-                </div>
-                <button id="btn-save-settings" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md mt-4">حفظ الإعدادات</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="admin-ratings" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-ratings')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">التقييمات</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="text-center mb-6 bg-yellow-50 dark:bg-yellow-900/20 py-6 rounded-2xl">
-                <div class="text-4xl font-bold text-yellow-500 mb-2" id="avg-rating-text">0.0</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">متوسط التقييم العام</div>
-            </div>
-            <div id="ratings-list" class="space-y-4"></div>
-        </div>
-    </div>
-
-    <div id="admin-services" class="free-page">
-        <header class="pt-12 pb-4 px-6 flex items-center gap-4 border-b border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <button onclick="closeFreePage('admin-services')" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-95"><i class="fa-solid fa-arrow-right dark:text-white"></i></button>
-            <h2 class="text-xl font-bold dark:text-white">إضافة خدمات</h2>
-        </header>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="flex gap-2 mb-6">
-                <input type="text" id="new-service-input" class="flex-1 p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 dark:text-white outline-none" placeholder="اسم الخدمة (مثال: حشوة)">
-                <button id="btn-add-service" class="bg-blue-600 text-white px-5 rounded-xl font-bold">إضافة</button>
-            </div>
-            <div id="admin-services-list" class="grid gap-3"></div>
-        </div>
-    </div>
-
-    <div id="modal-admin-login" class="fixed inset-0 bg-black/50 z-[200] hidden items-center justify-center p-6 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl max-w-sm w-full shadow-2xl relative">
-            <button onclick="closeAdminLogin()" class="absolute top-4 left-4 w-8 h-8 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center dark:text-white"><i class="fa-solid fa-times"></i></button>
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fa-solid fa-lock text-2xl text-blue-500"></i></div>
-            <h3 class="text-xl font-bold text-center mb-6 dark:text-white">دخول المالك</h3>
-            <input type="email" id="admin-email" class="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 mb-4 bg-gray-50 dark:bg-slate-900 dark:text-white" placeholder="البريد الإلكتروني">
-            <input type="password" id="admin-password" class="w-full p-4 rounded-xl border border-gray-200 dark:border-slate-700 mb-6 bg-gray-50 dark:bg-slate-900 dark:text-white" placeholder="كلمة المرور">
-            <button id="btn-admin-signin" class="w-full bg-slate-900 dark:bg-blue-600 text-white font-bold py-4 rounded-xl mb-2 transition-all">تسجيل الدخول</button>
-        </div>
-    </div>
-
-    <div id="toast" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl z-[999] opacity-0 transition-opacity duration-300 pointer-events-none flex items-center gap-2">
-        <span id="toast-icon"></span>
-        <span id="toast-text"></span>
-    </div>
+    <!-- حاوية لوحة التحكم الحرة -->
+    <div id="adminContainerMaster" class="hidden absolute inset-0 z-[100] bg-gray-100 flex flex-col h-full w-full overflow-hidden"></div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, addDoc, deleteDoc, serverTimestamp, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCvHO4btOBvzf_cAYRsrNTGJdCqUbkLzZQ",
-            authDomain: "doctor-3b3e4.firebaseapp.com",
-            projectId: "doctor-3b3e4",
-            storageBucket: "doctor-3b3e4.firebasestorage.app",
-            messagingSenderId: "959260495269",
-            appId: "1:959260495269:web:307f3bbbfeb803e29fec4c"
+            apiKey: "AIzaSyB_VdrKx54tADWsmRDz1QSNn_bHnrbFI88",
+            authDomain: "darb-56124.firebaseapp.com",
+            projectId: "darb-56124",
+            storageBucket: "darb-56124.firebasestorage.app",
+            messagingSenderId: "705925344755",
+            appId: "1:705925344755:web:e00882d29cf122d5c8f686",
+            measurementId: "G-5G66M3LYJ6"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const ADMIN_EMAIL = 'mslmalmyaly223@gmail.com';
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'doctor-app';
-
-        // --- الإضافة الجديدة: جلب صورة البداية من ذاكرة الهاتف فوراً ---
-        const savedSplash = localStorage.getItem('my_clinic_splash');
-        if (savedSplash) {
-            const splashData = JSON.parse(savedSplash);
-            if (splashData.splashImg && splashData.splashName) {
-                document.getElementById('splash-icon').classList.add('hidden');
-                const img = document.getElementById('splash-image');
-                img.src = splashData.splashImg;
-                img.classList.remove('hidden');
-                document.getElementById('splash-name').innerText = splashData.splashName;
-            }
-        }
+        const APP_ID = 'darb-56124'; 
+        const ADMIN_EMAIL = "mslmalmyaly223@gmail.com";
+        const GEMINI_API_KEY = "UPWMTf9wd0h9rs9yAA-e09TiinUL1G5PBBySazIA";
 
         let currentUser = null;
-        let isAdmin = false;
-        let state = {
-            services: [],
-            holidays: [],
-            settings: { startTime: 16, endTime: 21, maxPerSlot: 6 },
-            bookings: [],
-            ratings: [],
-            newBooking: { service: null, date: null, time: null }
-        };
-        let unsubscribes = []; 
+        let userData = null;
+        let currentTab = 'lectures';
+        let navStack = []; 
 
-        const ui = {
-            loader: document.getElementById('loader'),
-            welcome: document.getElementById('welcome-screen'),
-            appContainer: document.getElementById('app-container'),
-            tabs: document.querySelectorAll('.nav-item'),
-            tabContents: {
-                'tab-book': document.getElementById('tab-book'),
-                'tab-bookings': document.getElementById('tab-bookings'),
-                'tab-settings': document.getElementById('tab-settings'),
-            },
-            headerTitle: document.getElementById('header-title'),
-            headerSubtitle: document.getElementById('header-subtitle')
+        let dbData = {
+            subjects: [], teachers: [], chapters: [], lectures: [], mySubscriptions: [], codes: []
         };
 
-        const showToast = (msg, isSuccess = true) => {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-text').innerText = msg;
-            document.getElementById('toast-icon').innerHTML = isSuccess ? '<i class="fa-solid fa-check text-green-400"></i>' : '<i class="fa-solid fa-triangle-exclamation text-red-400"></i>';
-            toast.style.opacity = '1';
-            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        const DOM = {
+            splashScreen: document.getElementById('splashScreen'),
+            authScreen: document.getElementById('authScreen'),
+            mainApp: document.getElementById('mainApp'),
+            loginForm: document.getElementById('loginForm'),
+            signupForm: document.getElementById('signupForm'),
+            contentArea: document.getElementById('contentArea'),
+            headerTitle: document.getElementById('headerTitle'),
+            headerSub: document.getElementById('headerSub'),
+            backBtn: document.getElementById('backBtn'),
+            toast: document.getElementById('toast'),
+            modalOverlay: document.getElementById('modalOverlay'),
+            modalContent: document.getElementById('modalContent')
         };
 
-        window.openFreePage = (id) => { document.getElementById(id).style.display = 'flex'; };
-        window.closeFreePage = (id) => { document.getElementById(id).style.display = 'none'; };
-        window.closeAdminLogin = () => { document.getElementById('modal-admin-login').style.display = 'none'; };
+        window.showToast = (msg, type = 'success') => {
+            DOM.toast.textContent = msg;
+            DOM.toast.className = `toast show px-6 py-3 rounded-full text-white font-semibold shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            setTimeout(() => DOM.toast.classList.remove('show'), 3000);
+        };
 
-        const toggleTheme = () => {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            const isDark = html.classList.contains('dark');
-            document.getElementById('theme-text').innerText = isDark ? 'الوضع الصباحي' : 'الوضع الليلي';
-            document.getElementById('theme-icon-container').innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-            const knob = document.getElementById('theme-toggle-knob');
-            const bg = document.getElementById('theme-toggle-bg');
-            if(isDark) {
-                knob.style.transform = 'translateX(-24px)';
-                bg.classList.replace('bg-gray-200', 'bg-blue-600');
+        window.toggleAuth = (type) => {
+            if(type === 'signup') {
+                DOM.loginForm.classList.add('hidden');
+                DOM.signupForm.classList.remove('hidden');
             } else {
-                knob.style.transform = 'translateX(0)';
-                bg.classList.replace('bg-blue-600', 'bg-gray-200');
-            }
-        };
-        document.getElementById('btn-toggle-theme').addEventListener('click', toggleTheme);
-
-        onAuthStateChanged(auth, (user) => {
-            ui.loader.style.opacity = '0';
-            setTimeout(() => ui.loader.style.display = 'none', 500);
-
-            if (user) {
-                currentUser = user;
-                isAdmin = user.email === ADMIN_EMAIL;
-                
-                ui.welcome.style.display = 'none';
-                ui.appContainer.style.display = 'flex';
-                
-                document.getElementById('btn-admin-panel').style.display = isAdmin ? 'flex' : 'none';
-
-                const savedServices = localStorage.getItem('my_clinic_services');
-                if (savedServices) {
-                    state.services = JSON.parse(savedServices);
-                }
-
-                renderDates();
-                renderServices();
-
-                fetchAllData(); 
-            } else {
-                currentUser = null;
-                isAdmin = false;
-                ui.welcome.style.display = 'flex';
-                ui.appContainer.style.display = 'none';
-                clearListeners();
-            }
-        });
-
-        document.getElementById('btn-yes-book').addEventListener('click', async () => {
-            try {
-                ui.loader.style.display = 'flex';
-                ui.loader.style.opacity = '1';
-                
-                const uniqueTime = Date.now().toString(36);
-                const randomStr = Math.random().toString(36).substring(2, 8);
-                const randomEmail = `patient_${uniqueTime}_${randomStr}@clinic.com`;
-                const randomPass = `Pass_${uniqueTime}XyZ!`;
-                
-                await createUserWithEmailAndPassword(auth, randomEmail, randomPass); 
-            } catch (error) {
-                showToast("حدث خطأ في النظام، حاول مجدداً", false);
-                ui.loader.style.display = 'none';
-                console.error(error);
-            }
-        });
-
-        document.getElementById('hidden-admin-btn').addEventListener('click', () => {
-            document.getElementById('modal-admin-login').style.display = 'flex';
-        });
-
-        document.getElementById('btn-admin-signin').addEventListener('click', async () => {
-    const email = document.getElementById('admin-email').value.trim();
-    const pass = document.getElementById('admin-password').value;
-    const btn = document.getElementById('btn-admin-signin');
-    
-    if (email !== ADMIN_EMAIL) {
-        return showToast("هذا البريد غير مصرح له كمالك", false);
-    }
-
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق...';
-    try {
-        // محاولة تسجيل الدخول
-        await signInWithEmailAndPassword(auth, email, pass);
-        closeAdminLogin();
-        document.getElementById('btn-admin-panel').style.display = 'flex';
-        showToast("تم دخول المالك بنجاح");
-        btn.innerHTML = 'تسجيل الدخول';
-    } catch (e) {
-        // إذا كان الحساب غير موجود، يقوم النظام بإنشائه تلقائياً لأن البريد مطابق لبريد المالك
-        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-            try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-                closeAdminLogin();
-                document.getElementById('btn-admin-panel').style.display = 'flex';
-                showToast("تم إنشاء حساب المالك وتسجيل الدخول بنجاح");
-            } catch (err) {
-                showToast("حدث خطأ في كلمة المرور أو الحساب", false);
-            }
-        } else {
-            showToast("كلمة المرور خاطئة", false);
-        }
-        btn.innerHTML = 'تسجيل الدخول';
-    }
-});
-
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            signOut(auth);
-        });
-
-        function clearListeners() {
-            unsubscribes.forEach(unsub => unsub());
-            unsubscribes = [];
-        }
-
-        async function fetchAllData() {
-            if(!currentUser) return;
-            
-            try {
-                const srvSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'services'));
-                state.services = srvSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                
-                localStorage.setItem('my_clinic_services', JSON.stringify(state.services));
-                
-                renderServices();
-                if(isAdmin) renderAdminServices();
-
-const setSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'));
-                if(setSnap.exists()) {
-                    state.settings = { ...state.settings, ...setSnap.data() };
-                    
-                    // تحديث ذاكرة الهاتف بالصورة والاسم حتى تظهر فوراً بالمرة القادمة
-                    localStorage.setItem('my_clinic_splash', JSON.stringify({
-                        splashImg: state.settings.splashImg,
-                        splashName: state.settings.splashName
-                    }));
-                }
-                
-                // تطبيق شاشة التحميل المخصصة
-                if(state.settings.splashImg && state.settings.splashName) {
-                    document.getElementById('splash-icon').classList.add('hidden');
-                    const img = document.getElementById('splash-image');
-                    img.src = state.settings.splashImg;
-                    img.classList.remove('hidden');
-                    document.getElementById('splash-name').innerText = state.settings.splashName;
-                }
-                // تطبيق العنوان
-                if(state.settings.address) {
-                    document.getElementById('clinic-address-text').innerText = state.settings.address;
-                    document.getElementById('clinic-address-display').classList.remove('hidden');
-                }
-
-                // 3. جلب العطل
-                const holSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'holidays'));
-                state.holidays = holSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                if(isAdmin) renderAdminHolidays();
-                renderDates(); 
-
-// 4. جلب الحجوزات بذكاء (المالك يرى الكل، والمريض يرى حجوزاته فقط)
-let bookingsQuery;
-if (isAdmin) {
-    bookingsQuery = collection(db, 'artifacts', appId, 'public', 'data', 'bookings');
-} else {
-    bookingsQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'bookings'), where("userId", "==", currentUser.uid));
-}
-
-const unsubBookings = onSnapshot(bookingsQuery, (snapshot) => {
-    state.bookings = snapshot.docs.map(doc => ({
-        id: doc.id, 
-        ...doc.data(),
-        // حماية من الأخطاء في حال تأخر الإنترنت
-        createdAt: doc.data().createdAt || { seconds: Math.floor(Date.now() / 1000) }
-    }));
-    
-    renderMyBookings();
-    if(state.newBooking.date) renderTimes();
-    if(isAdmin) renderTodayBookings();
-});
-unsubscribes.push(unsubBookings);
-
-                // 5. جلب التقييمات
-                const ratSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'ratings'));
-                state.ratings = ratSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                if(isAdmin) renderAdminRatings();
-
-window.openRatingModal = () => {
-    document.getElementById('modal-rating').style.display = 'flex';
-    document.getElementById('modal-rating').classList.remove('hidden');
-};
-window.closeRatingModal = () => {
-    document.getElementById('modal-rating').style.display = 'none';
-    document.getElementById('modal-rating').classList.add('hidden');
-};
-
-// نظام المراقبة الذكي للتقييم (يشتغل كل دقيقة يتحقق إذا مرت ساعة على الحجز)
-setInterval(() => {
-    if(!currentUser) return;
-    const now = new Date();
-    state.bookings.filter(b => b.userId === currentUser.uid).forEach(b => {
-        // نصنع وقت الحجز بدقة
-        const [hours, minutes] = b.time.split(':');
-        const bookDate = new Date(b.date);
-        bookDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        
-        // نضيف ساعة كاملة لوقت الحجز
-        bookDate.setHours(bookDate.getHours() + 1);
-        
-        // إذا كان الوقت الحالي قد تجاوز موعد الحجز بـساعة ولم يتم التقييم سابقاً
-        if (now >= bookDate && !localStorage.getItem(`rated_${b.id}`)) {
-            openRatingModal();
-            localStorage.setItem(`rated_${b.id}`, 'true'); 
-        }
-    });
-}, 60000); // يفحص كل 60 ثانية
-
-// تحديث زر تقييم الدكتور الموجود في صفحة "الإعدادات" ليفتح النافذة الجديدة
-document.querySelector('[onclick="openFreePage(\'page-rating\')"]').setAttribute('onclick', 'openRatingModal()');
-
-// تحديث دالة إرسال التقييم
-document.getElementById('btn-submit-rating').onclick = async () => {
-    if(currentRating === 0) return showToast("يرجى اختيار التقييم بالنجوم", false);
-    if(!currentUser) return;
-    const comment = document.getElementById('rating-comment').value;
-
-    try {
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'ratings'), {
-            userId: currentUser.uid,
-            rating: currentRating,
-            comment: comment,
-            createdAt: serverTimestamp()
-        });
-        showToast("شكراً لتقييمك!");
-        closeRatingModal();
-        document.getElementById('rating-comment').value = '';
-        currentRating = 0;
-        document.querySelectorAll('#star-rating-container i').forEach(s => s.classList.replace('text-yellow-400', 'text-gray-300'));
-    } catch(e) { showToast("حدث خطأ", false); }
-};
-
-                // === تحديث الإحصائيات (للمالك) ===
-                if(isAdmin) {
-                    document.getElementById('stat-bookings').innerText = state.bookings.length;
-                    const uniquePatients = new Set(state.bookings.map(b => b.userId)).size;
-                    document.getElementById('stat-patients').innerText = uniquePatients;
-                    renderTodayBookings();
-                }
-
-            } catch (error) {
-                console.error(error);
-                showToast("حدث خطأ في جلب البيانات من السيرفر", false);
-            }
-        }
-
-        ui.tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                ui.tabs.forEach(t => {
-                    t.classList.remove('text-blue-600');
-                    t.classList.add('text-gray-400', 'dark:text-gray-500');
-                });
-                Object.values(ui.tabContents).forEach(content => content.classList.add('hidden'));
-                
-                tab.classList.add('text-blue-600');
-                tab.classList.remove('text-gray-400', 'dark:text-gray-500');
-                const target = tab.dataset.target;
-                ui.tabContents[target].classList.remove('hidden');
-
-                const titles = {
-                    'tab-book': {t: 'حجز موعد', s: 'احجز موعدك بسهولة'},
-                    'tab-bookings': {t: 'حجوزاتي', s: 'تفاصيل مواعيدك القادمة'},
-                    'tab-settings': {t: 'الإعدادات', s: 'التحكم والتخصيص'}
-                };
-                ui.headerTitle.innerText = titles[target].t;
-                ui.headerSubtitle.innerText = titles[target].s; 
-
-                if(target === 'tab-bookings') {
-                    document.getElementById('nav-bookings-btn').classList.remove('has-notification');
-                }
-            });
-        });
-
-        function renderServices() {
-            const grid = document.getElementById('services-grid');
-            grid.innerHTML = '';
-            if(state.services.length === 0) {
-                grid.innerHTML = '<div class="col-span-2 text-center p-4 bg-gray-50 dark:bg-slate-800 rounded-xl text-gray-500 border border-dashed border-gray-300 dark:border-slate-600">لا توجد خدمات حالياً. يرجى دخول المالك وإضافة خدمات لتظهر هنا.</div>';
-                return;
-            }
-            state.services.forEach(srv => {
-                const btn = document.createElement('button');
-                // ضفنا كلاسات أساسية يسهل إزالتها عند التحديد
-                btn.className = 'service-btn p-3 rounded-xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800 font-bold active:scale-95 transition-all flex flex-col items-center justify-center gap-1';
-                btn.innerHTML = `<i class="fa-solid fa-tooth text-lg text-blue-400"></i><span class="text-sm dark:text-white">${srv.name}</span>`;
-                
-                btn.onclick = () => {
-                    // 1. نرجع كل الأزرار لشكلها الطبيعي (غير محدد)
-                    document.querySelectorAll('.service-btn').forEach(b => {
-                        b.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-600', 'ring-2', 'ring-blue-300');
-                        b.classList.add('border-gray-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800');
-                    });
-                    
-                    // 2. نميز الزر المحدّد ونشيل منه الشكل الطبيعي
-                    btn.classList.remove('border-gray-200', 'bg-white', 'dark:border-slate-700', 'dark:bg-slate-800');
-                    btn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-600', 'ring-2', 'ring-blue-300');
-                    
-                    state.newBooking.service = srv.name;
-                    checkSelectionComplete(); 
-                };
-                grid.appendChild(btn);
-            });
-        }
-
-        function renderDates() {
-            const container = document.getElementById('dates-container');
-            container.innerHTML = '';
-            
-            const today = new Date();
-            for(let i = 0; i < 30; i++) {
-                const date = new Date(today);
-                date.setDate(today.getDate() + i);
-                
-                const dateStr = date.toISOString().split('T')[0]; 
-                const dayName = date.toLocaleDateString('ar-EG', { weekday: 'short' });
-                const dayNum = date.getDate();
-
-                const btn = document.createElement('button');
-                btn.className = 'date-btn min-w-[60px] h-[70px] flex flex-col items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 transition-all active:scale-95';
-                btn.innerHTML = `<span class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">${dayName}</span><span class="text-lg font-bold dark:text-white">${dayNum}</span>`;
-                
-                btn.onclick = () => {
-                    document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    state.newBooking.date = dateStr;
-                    state.newBooking.time = null; 
-                    checkSelectionComplete(); 
-                    renderTimes();
-                };
-                container.appendChild(btn);
-            }
-        }
-
-        function renderTimes() {
-            if(!state.newBooking.date) return;
-            
-            const timeArea = document.getElementById('time-selection-area');
-            const grid = document.getElementById('times-grid');
-            const statusMsg = document.getElementById('day-status-msg');
-            
-            const isHoliday = state.holidays.find(h => h.date === state.newBooking.date);
-            if(isHoliday) {
-                statusMsg.innerText = `هذا اليوم عطلة: ${isHoliday.note}`;
-                statusMsg.classList.remove('hidden');
-                timeArea.classList.add('hidden');
-                return;
-            }
-
-            statusMsg.classList.add('hidden');
-            timeArea.classList.remove('hidden');
-            grid.innerHTML = '';
-
-            const sStart = parseInt(state.settings.startTime) || 16;
-            const sEnd = parseInt(state.settings.endTime) || 21;
-            const maxPerSlot = parseInt(state.settings.maxPerSlot) || 6;
-            let allBooked = true;
-
-            for(let i = sStart; i <= sEnd; i++) {
-                const timeStr = `${i}:00`;
-                const displayTime = i > 12 ? `${i-12}:00 م` : (i === 12 ? `12:00 م` : `${i}:00 ص`);
-                
-                const currentSlotBookings = state.bookings.filter(b => b.date === state.newBooking.date && b.time === timeStr).length;
-                const isFull = currentSlotBookings >= maxPerSlot;
-
-                if(!isFull) allBooked = false;
-
-                const btn = document.createElement('button');
-                btn.className = `time-btn p-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold transition-all ${isFull ? 'cursor-not-allowed' : 'active:scale-95'}`;
-                btn.innerText = displayTime;
-                
-                if(isFull) {
-                    btn.disabled = true;
-                    btn.innerHTML = `<span class="line-through">${displayTime}</span><div class="text-[10px] text-red-400 mt-1">ممتلئ</div>`;
-                } else {
-                    btn.onclick = () => {
-                        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
-                        btn.classList.add('selected');
-                        state.newBooking.time = timeStr;
-                        checkSelectionComplete(); 
-                    };
-                }
-                grid.appendChild(btn);
-            }
-
-            if(allBooked) {
-                statusMsg.innerText = "تم حجز كل الأوقات لهذا اليوم";
-                statusMsg.classList.remove('hidden');
-                timeArea.classList.add('hidden');
-            }
-        }
-
-        function checkSelectionComplete() {
-            const btnNext = document.getElementById('btn-next-step3');
-            if(state.newBooking.service && state.newBooking.date && state.newBooking.time) {
-                btnNext.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
-                btnNext.innerText = 'التالي (إدخال بيانات المريض)';
-            } else {
-                btnNext.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
-                btnNext.innerText = 'الرجاء اختيار الخدمة والتاريخ والوقت';
-            }
-        }
-
-        document.getElementById('btn-next-step3').onclick = () => {
-            document.getElementById('step-1-and-2').classList.add('hidden');
-            document.getElementById('step-3').classList.remove('hidden');
-        };
-        document.getElementById('btn-back-step2').onclick = () => {
-            document.getElementById('step-3').classList.add('hidden');
-            document.getElementById('step-1-and-2').classList.remove('hidden');
-        };
-
-        // دوال إغلاق وفتح نافذة الدفع
-window.closePaymentModal = () => {
-    const modal = document.getElementById('modal-payment');
-    modal.classList.add('opacity-0');
-    document.getElementById('modal-payment-content').classList.add('scale-95');
-    setTimeout(() => { modal.classList.add('hidden'); modal.style.display = 'none'; }, 300);
-};
-
-// عند ضغط تأكيد الحجز (يفتح نافذة الدفع بدلاً من الحجز المباشر)
-document.getElementById('btn-confirm-book').onclick = () => {
-    const name = document.getElementById('patient-name').value.trim();
-    const phone = document.getElementById('patient-phone').value.trim();
-    if(!name || !phone) return showToast("يرجى إدخال الاسم ورقم الهاتف", false);
-    if(!currentUser) return;
-
-    const modal = document.getElementById('modal-payment');
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-    setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        document.getElementById('modal-payment-content').classList.remove('scale-95');
-    }, 10);
-};
-
-// دالة الحجز النهائية (سريعة وفورية)
-const processBooking = async (paymentMethod) => {
-    const name = document.getElementById('patient-name').value.trim();
-    const phone = document.getElementById('patient-phone').value.trim();
-    
-    closePaymentModal();
-    const btn = document.getElementById('btn-confirm-book');
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-    btn.disabled = true;
-
-    try {
-        // 1. إضافة الحجز للشاشة فوراً بدون انتظار الإنترنت (سرعة 100%)
-        const tempBooking = {
-            id: 'temp_' + Date.now(),
-            userId: currentUser.uid,
-            service: state.newBooking.service,
-            date: state.newBooking.date,
-            time: state.newBooking.time,
-            name: name,
-            phone: phone,
-            status: 'قيد الانتظار',
-            paymentMethod: paymentMethod,
-            createdAt: { seconds: Math.floor(Date.now() / 1000) }
-        };
-        state.bookings.unshift(tempBooking);
-        renderMyBookings();
-        document.getElementById('nav-bookings-btn').classList.add('has-notification');
-
-        // 2. إظهار نافذة النجاح فوراً
-        const modal = document.getElementById('modal-booking-success');
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            document.getElementById('modal-booking-content').classList.remove('scale-95');
-        }, 10);
-        
-        // 3. إعادة ضبط الواجهة للصفر
-        document.getElementById('patient-name').value = '';
-        document.getElementById('patient-phone').value = '';
-        state.newBooking = { service: null, date: null, time: null }; 
-        document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300'));
-        document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
-        document.getElementById('time-selection-area').classList.add('hidden');
-        checkSelectionComplete(); 
-        document.getElementById('step-3').classList.add('hidden');
-        document.getElementById('step-1-and-2').classList.remove('hidden'); 
-
-        // 4. الإرسال الفعلي للفايربيس في الخلفية
-        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'bookings'), {
-            userId: currentUser.uid,
-            service: tempBooking.service,
-            date: tempBooking.date,
-            time: tempBooking.time,
-            name: tempBooking.name,
-            phone: tempBooking.phone,
-            status: tempBooking.status,
-            paymentMethod: tempBooking.paymentMethod,
-            createdAt: serverTimestamp()
-        });
-
-    } catch (e) {
-        showToast("حدث خطأ في الاتصال، حاول مجدداً", false);
-    } finally {
-        btn.innerHTML = '<span>تأكيد الحجز</span><i class="fa-solid fa-check-circle"></i>';
-        btn.disabled = false;
-    }
-};
-
-document.getElementById('btn-pay-cash').onclick = () => processBooking('نقدي');
-document.getElementById('btn-pay-card').onclick = () => processBooking('إلكتروني (ماستر)');
-
-        window.cancelBooking = async (id) => {
-            if(!currentUser) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bookings', id));
-                showToast("تم إلغاء الحجز");
-            } catch(e) { showToast("خطأ في الإلغاء", false); }
-        };
-
-        function renderMyBookings() {
-            if(!currentUser) return;
-            const container = document.getElementById('my-bookings-container');
-            const myB = state.bookings.filter(b => b.userId === currentUser.uid);
-            
-            if(myB.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-500 dark:text-gray-400">
-                    <i class="fa-regular fa-calendar-xmark text-4xl mb-3 opacity-50"></i>
-                    <p>لا توجد حجوزات حالياً</p>
-                </div>`;
-                return;
-            }
-
-            container.innerHTML = '';
-            myB.forEach(b => {
-                const hour = parseInt(b.time.split(':')[0]);
-                const displayTime = hour > 12 ? `${hour-12}:00 م` : (hour === 12 ? `12:00 م` : `${hour}:00 ص`);
-
-                const card = document.createElement('div');
-                card.className = 'glass-card p-5 rounded-2xl relative overflow-hidden';
-                card.innerHTML = `
-                    <div class="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
-                    <div class="flex justify-between items-start mb-3 pl-2 pr-4">
-                        <div>
-                            <h4 class="font-bold text-lg dark:text-white">${b.service}</h4>
-                            <p class="text-sm text-gray-500 dark:text-gray-400"><i class="fa-regular fa-calendar ml-1"></i> ${b.date}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400"><i class="fa-regular fa-clock ml-1"></i> ${displayTime}</p>
-                        </div>
-                        <div class="w-10 h-10 bg-blue-50 dark:bg-slate-800 rounded-full flex justify-center items-center text-blue-500">
-                            <i class="fa-solid fa-tooth"></i>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-slate-800 rounded-xl p-3 mb-3 mr-2 text-sm dark:text-gray-300">
-                        <p><strong>الاسم:</strong> ${b.name}</p>
-                        <p><strong>الهاتف:</strong> ${b.phone}</p>
-                    </div>
-                    <div class="flex gap-2 mt-3 pl-2 pr-2">
-                        <button onclick="showQRCode('${b.name}', '${b.service}', '${b.date}', '${displayTime}')" class="w-12 shrink-0 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 rounded-xl flex items-center justify-center active:scale-95 transition-transform border border-gray-200 dark:border-slate-600">
-                            <i class="fa-solid fa-qrcode text-lg"></i>
-                        </button>
-                        <button onclick="markArrived('${b.id}')" class="${b.status === 'arrived' ? 'bg-green-500 text-white border-green-500' : 'bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-900/30'} flex-1 text-sm font-bold py-2 border rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2">
-                            ${b.status === 'arrived' ? '<i class="fa-solid fa-check"></i> أنت في الطريق' : 'وصلت'}
-                        </button>
-                        <button onclick="cancelBooking('${b.id}')" class="flex-1 text-red-500 text-sm font-bold py-2 border border-red-200 dark:border-red-900/30 rounded-xl active:bg-red-50 dark:active:bg-red-900/20 transition-colors">
-                            إلغاء
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        let currentRating = 0;
-        document.querySelectorAll('#star-rating-container i').forEach(star => {
-            star.addEventListener('click', (e) => {
-                // نستخدم currentTarget حتى نضمن انه ده يستهدف النجمة بالضبط
-                currentRating = parseInt(e.currentTarget.dataset.val);
-                document.querySelectorAll('#star-rating-container i').forEach(s => {
-                    if(parseInt(s.dataset.val) <= currentRating) {
-                        s.classList.remove('text-gray-300');
-                        s.classList.add('text-yellow-400');
-                    } else {
-                        s.classList.remove('text-yellow-400');
-                        s.classList.add('text-gray-300');
-                    }
-                });
-            });
-        });
-
-        document.getElementById('btn-submit-rating').onclick = async () => {
-            if(currentRating === 0) return showToast("يرجى اختيار التقييم بالنجوم", false);
-            if(!currentUser) return;
-            const comment = document.getElementById('rating-comment').value;
-
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'ratings'), {
-                    userId: currentUser.uid,
-                    rating: currentRating,
-                    comment: comment,
-                    createdAt: serverTimestamp()
-                });
-                showToast("شكراً لتقييمك!");
-                closeFreePage('page-rating');
-                document.getElementById('rating-comment').value = '';
-                currentRating = 0;
-                document.querySelectorAll('#star-rating-container i').forEach(s => s.classList.replace('text-yellow-400', 'text-gray-300'));
-            } catch(e) { showToast("حدث خطأ", false); }
-        };
-
-        function renderAdminServices() {
-            const list = document.getElementById('admin-services-list');
-            list.innerHTML = '';
-            state.services.forEach(s => {
-                list.innerHTML += `
-                    <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
-                        <span class="font-bold dark:text-white">${s.name}</span>
-                        <button onclick="deleteService('${s.id}')" class="text-red-500 w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
-                    </div>`;
-            });
-        }
-        document.getElementById('btn-add-service').onclick = async () => {
-            const val = document.getElementById('new-service-input').value.trim();
-            if(!val) return;
-            try {
-                const docRef = await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'services'), { name: val });
-                
-                state.services.push({ id: docRef.id, name: val });
-                renderServices();
-                if(isAdmin) renderAdminServices();
-
-                document.getElementById('new-service-input').value = '';
-                showToast("تم إضافة الخدمة");
-            } catch(e) {
-                showToast("خطأ: تأكد من قواعد الفايربيس (Rules)", false);
-            }
-        };
-        window.deleteService = async (id) => {
-            if(confirm("حذف هذه الخدمة؟")) {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'services', id));
+                DOM.signupForm.classList.add('hidden');
+                DOM.loginForm.classList.remove('hidden');
             }
         };
 
-        function renderAdminHolidays() {
-            const list = document.getElementById('holidays-list');
-            list.innerHTML = '';
-            state.holidays.forEach(h => {
-                list.innerHTML += `
-                    <div class="flex justify-between items-center p-4 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
-                        <div>
-                            <span class="font-bold dark:text-white text-sm bg-red-100 dark:bg-red-900/30 text-red-600 px-2 py-1 rounded-md ml-2">${h.date}</span>
-                            <span class="text-sm dark:text-gray-300">${h.note}</span>
-                        </div>
-                        <button onclick="deleteHoliday('${h.id}')" class="text-red-500 w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center"><i class="fa-solid fa-trash"></i></button>
-                    </div>`;
-            });
-        }
-        document.getElementById('btn-add-holiday').onclick = async () => {
-            const date = document.getElementById('holiday-date').value;
-            const note = document.getElementById('holiday-note').value.trim() || 'عطلة';
-            if(!date) return showToast("اختر التاريخ", false);
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'holidays'), { date, note });
-                showToast("تمت إضافة العطلة");
-            } catch(e) {}
-        };
-        window.deleteHoliday = async (id) => {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'holidays', id));
+        window.showModal = (htmlContent) => {
+            DOM.modalContent.innerHTML = htmlContent;
+            DOM.modalOverlay.classList.remove('hidden');
+            setTimeout(() => DOM.modalContent.classList.remove('scale-95'), 10);
         };
 
-        document.getElementById('btn-save-settings').onclick = async () => {
-            let startVal = parseInt(document.getElementById('setting-start-time').value);
-            let startAmPm = document.getElementById('setting-start-ampm').value;
-            let endVal = parseInt(document.getElementById('setting-end-time').value);
-            let endAmPm = document.getElementById('setting-end-ampm').value;
-            const max = document.getElementById('setting-max-per-slot').value;
-
-            // برمجة للتحويل الذكي حتى التطبيق يشتغل بدون أي أخطاء
-            let start = startVal;
-            if (startAmPm === 'PM' && start !== 12) start += 12;
-            if (startAmPm === 'AM' && start === 12) start = 0;
-
-            let end = endVal;
-            if (endAmPm === 'PM' && end !== 12) end += 12;
-            if (endAmPm === 'AM' && end === 12) end = 0;
-
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), {
-                    startTime: Number(start),
-                    endTime: Number(end),
-                    maxPerSlot: Number(max)
-                });
-                showToast("تم حفظ الإعدادات وستطبق فوراً");
-            } catch(e) {showToast("خطأ", false)}
-        };
-
-        document.querySelector('[onclick="openFreePage(\'admin-times\')"]').addEventListener('click', () => {
-            let sTime = state.settings.startTime || 16;
-            let eTime = state.settings.endTime || 21;
-
-            // ترتيب وقت البداية
-            document.getElementById('setting-start-ampm').value = sTime >= 12 ? 'PM' : 'AM';
-            document.getElementById('setting-start-time').value = sTime > 12 ? sTime - 12 : (sTime === 0 ? 12 : sTime);
-
-            // ترتيب وقت النهاية
-            document.getElementById('setting-end-ampm').value = eTime >= 12 ? 'PM' : 'AM';
-            document.getElementById('setting-end-time').value = eTime > 12 ? eTime - 12 : (eTime === 0 ? 12 : eTime);
-
-            document.getElementById('setting-max-per-slot').value = state.settings.maxPerSlot || 6;
-        });
-
-        function renderAdminRatings() {
-            const list = document.getElementById('ratings-list');
-            list.innerHTML = '';
-            
-            if(state.ratings.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-500">لا توجد تقييمات بعد</p>';
-                document.getElementById('avg-rating-text').innerText = '0.0';
-                return;
-            }
-
-            let sum = 0;
-            state.ratings.forEach(r => {
-                sum += r.rating;
-                let starsHTML = '';
-                for(let i=0; i<5; i++) {
-                    starsHTML += `<i class="fa-solid fa-star ${i < r.rating ? 'text-yellow-400' : 'text-gray-200'}"></i>`;
-                }
-                list.innerHTML += `
-                    <div class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
-                        <div class="flex justify-between items-center mb-2">
-                            <div class="text-sm text-gray-400"><i class="fa-solid fa-user"></i> مريض</div>
-                            <div class="text-sm flex gap-1">${starsHTML}</div>
-                        </div>
-                        ${r.comment ? `<p class="text-sm dark:text-gray-300 bg-gray-50 dark:bg-slate-700 p-3 rounded-lg mt-2">${r.comment}</p>` : ''}
-                    </div>`;
-            });
-            
-            const avg = (sum / state.ratings.length).toFixed(1);
-            document.getElementById('avg-rating-text').innerText = avg;
-        }
-        
-        
-        // إغلاق النوافذ
-        window.closeSuccessModal = () => {
-            const modal = document.getElementById('modal-booking-success');
-            modal.classList.add('opacity-0');
-            document.getElementById('modal-booking-content').classList.add('scale-95');
+        window.closeModal = () => {
+            DOM.modalContent.classList.add('scale-95');
             setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.style.display = 'none';
+                DOM.modalOverlay.classList.add('hidden');
+                DOM.modalContent.innerHTML = '';
             }, 300);
         };
-        window.closeQRModal = () => {
-    const modal = document.getElementById('modal-qr');
-    modal.classList.add('hidden');
-    modal.style.display = 'none';
-};
 
-window.showQRCode = (name, service, date, time) => {
-    const qrData = encodeURIComponent(`المريض: ${name}\nالخدمة: ${service}\nالتاريخ: ${date}\nالوقت: ${time}`);
-    document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
-    const modal = document.getElementById('modal-qr');
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-};
-
-        // دالة الضغط على "وصلت"
-        window.markArrived = async (id) => {
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bookings', id), { status: 'arrived' }, { merge: true });
-                // تحديث محلي
-                const idx = state.bookings.findIndex(b => b.id === id);
-                if(idx > -1) state.bookings[idx].status = 'arrived';
-                renderMyBookings();
-                showToast("تم إرسال إشعار بوصولك للمالك");
-            } catch(e) { showToast("خطأ", false); }
-        };
-
-// متغير عالمي لحفظ الصورة المضغوطة
-        let compressedImageBase64 = '';
-
-        // دالة ضغط الصورة عند اختيارها من الهاتف
-        document.getElementById('setting-splash-file').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 300; 
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    if (width > height) {
-                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                    } else {
-                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // تحويل الصورة المضغوطة إلى نص Base64 بجودة 70%
-                    compressedImageBase64 = canvas.toDataURL('image/jpeg', 0.7); 
-                    
-                    // إظهار المعاينة
-                    const preview = document.getElementById('splash-preview');
-                    preview.src = compressedImageBase64;
-                    preview.classList.remove('hidden');
-                }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(file);
-        });
-
-// دوال حفظ الإعدادات للمالك
-        document.getElementById('btn-save-splash').onclick = async () => {
-            const name = document.getElementById('setting-splash-name').value;
-            const finalImg = compressedImageBase64 !== '' ? compressedImageBase64 : state.settings.splashImg;
-            
-            try {
-                const btn = document.getElementById('btn-save-splash');
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
-                
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), { splashImg: finalImg, splashName: name }, { merge: true });
-                
-                // حفظ التغييرات بذاكرة هاتف المالك فوراً حتى تظهر من يسوي ريفرش
-                localStorage.setItem('my_clinic_splash', JSON.stringify({
-                    splashImg: finalImg,
-                    splashName: name
-                }));
-
-                showToast("تم الحفظ بنجاح (يرجى التحديث لرؤية النتيجة)");
-                btn.innerHTML = 'حفظ التغييرات';
-            } catch(e) {
-                showToast("خطأ في الحفظ", false);
-                document.getElementById('btn-save-splash').innerHTML = 'حفظ التغييرات';
-            }
-        };
-
-        document.getElementById('btn-save-address').onclick = async () => {
-            const addr = document.getElementById('setting-clinic-address').value;
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), { address: addr }, { merge: true });
-                document.getElementById('clinic-address-text').innerText = addr;
-                document.getElementById('clinic-address-display').classList.remove('hidden');
-                showToast("تم حفظ العنوان");
-            } catch(e) {showToast("خطأ", false)}
-        };
-
-        document.getElementById('btn-save-loyalty').onclick = async () => {
-            const enabled = document.getElementById('setting-loyalty-toggle').checked;
-            const count = document.getElementById('setting-loyalty-count').value;
-            try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), { loyaltyEnabled: enabled, loyaltyCount: Number(count) }, { merge: true });
-                state.settings.loyaltyEnabled = enabled;
-                state.settings.loyaltyCount = Number(count);
-                showToast("تم حفظ نظام المكافآت");
-                renderTodayBookings();
-            } catch(e) {showToast("خطأ", false)}
-        };
-
-        // تعبئة البيانات عند فتح الصفحات
-        document.querySelector('[onclick="openFreePage(\'admin-splash\')"]').addEventListener('click', () => {
-            document.getElementById('setting-splash-name').value = state.settings.splashName || '';
-            const preview = document.getElementById('splash-preview');
-            if (state.settings.splashImg) {
-                preview.src = state.settings.splashImg;
-                preview.classList.remove('hidden');
-                compressedImageBase64 = state.settings.splashImg; 
-            } else {
-                preview.classList.add('hidden');
-            }
-        });
-
-        document.querySelector('[onclick="openFreePage(\'admin-address\')"]').addEventListener('click', () => {
-            document.getElementById('setting-clinic-address').value = state.settings.address || '';
-        });
-
-        document.querySelector('[onclick="openFreePage(\'admin-loyalty\')"]').addEventListener('click', () => {
-            document.getElementById('setting-loyalty-toggle').checked = state.settings.loyaltyEnabled || false;
-            document.getElementById('setting-loyalty-count').value = state.settings.loyaltyCount || '';
-        });
-
-        // دالة جلب وعرض حجوزات اليوم للمالك
-        function renderTodayBookings() {
-            if(!isAdmin) return;
-            const list = document.getElementById('admin-today-list');
-            const today = new Date().toISOString().split('T')[0];
-            
-            // تصفية وترتيب (الأحدث أولاً)
-            const todayBookings = state.bookings
-                .filter(b => b.date === today)
-                .sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
-
-            document.getElementById('today-date-display').innerText = today;
-            list.innerHTML = '';
-
-            if(todayBookings.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-500 py-10 mt-10">لا توجد حجوزات لهذا اليوم.</p>';
-                return;
-            }
-
-            todayBookings.forEach(b => {
-                // حساب إذا كان الحجز مجاني
-                let isFree = false;
-                if(state.settings.loyaltyEnabled && state.settings.loyaltyCount) {
-                    const threshold = parseInt(state.settings.loyaltyCount);
-                    // جلب كل حجوزات هذا المريض ترتيباً تاريخياً
-                    const userBookings = state.bookings.filter(ub => ub.userId === b.userId).sort((x, y) => x.createdAt?.seconds - y.createdAt?.seconds);
-                    const bookingIndex = userBookings.findIndex(ub => ub.id === b.id);
-                    // مثلا لو كتب 6 (السابع مجاني)، نتحقق من القسمة
-                    if((bookingIndex + 1) % (threshold + 1) === 0) {
-                        isFree = true;
-                    }
-                }
-
-                const hour = parseInt(b.time.split(':')[0]);
-                const displayTime = hour > 12 ? `${hour-12}:00 م` : (hour === 12 ? `12:00 م` : `${hour}:00 ص`);
-                
-                let statusBadge = '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md">قيد الانتظار</span>';
-if(b.status === 'arrived') statusBadge = '<span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-md shadow-sm"><i class="fa-solid fa-check-double"></i> وصل للعيادة</span>';
-
-let paymentBadge = b.paymentMethod === 'نقدي' 
-    ? '<span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded"><i class="fa-solid fa-money-bill"></i> دفع نقدي</span>' 
-    : '<span class="text-xs text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded"><i class="fa-brands fa-cc-mastercard"></i> ماستر كارد</span>';
-
-                list.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
-                        ${isFree ? '<div class="absolute top-4 left-[-30px] bg-orange-500 text-white text-[10px] font-bold px-8 py-1 transform -rotate-45 shadow-md">مجاني</div>' : ''}
-                        
-                        <div class="flex justify-between items-start mb-2 ${isFree ? 'pl-8' : ''}">
-                            <div class="font-bold text-lg dark:text-white text-blue-700">${b.name}</div>
-                            <div class="text-left">
-                                <div class="font-bold text-slate-800 dark:text-gray-200 dir-ltr">${displayTime}</div>
-                                <div class="text-[10px] text-gray-400">الوقت الدقيق</div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between items-center bg-gray-50 dark:bg-slate-700/50 p-2 rounded-lg mb-3">
-                            <span class="text-sm dark:text-gray-300 font-bold">${b.service}</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400 dir-ltr">${b.phone}</span>
-                        </div>
-                        
-                        <div class="flex flex-col gap-2 border-t border-gray-100 dark:border-slate-700 pt-2">
-    <div class="flex justify-between items-center">
-        ${statusBadge}
-        ${paymentBadge}
-    </div>
-    <div class="text-left">
-        ${isFree ? '<span class="text-xs text-orange-500 font-bold"><i class="fa-solid fa-gift"></i> مكافأة حجز مجاني</span>' : ''}
-    </div>
-</div>
-                    </div>
-                `;
+        // Helper to convert Image to Base64
+        window.fileToBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
             });
+        };
+
+        DOM.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerHTML = '<div class="loader mx-auto border-white border-t-transparent"></div>';
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch (error) {
+                showToast('البريد أو الرمز السري غير صحيح', 'error');
+                btn.innerHTML = originalText;
+            }
+        });
+
+        DOM.signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const phone = document.getElementById('signupPhone').value;
+            const email = document.getElementById('signupEmail').value;
+            const pass = document.getElementById('signupPassword').value;
+            
+            if(!/^07[0-9]{9}$/.test(phone)) return showToast('رقم الهاتف غير صحيح', 'error');
+            if(name.trim().split(/\s+/).length < 3) return showToast('يرجى كتابة الاسم الثلاثي', 'error');
+
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<div class="loader mx-auto border-white border-t-transparent"></div>';
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, 'artifacts', APP_ID, 'users', userCredential.user.uid, 'profile', 'data'), {
+                    name, phone, grade: '', gender: Math.random() > 0.5 ? 'boy' : 'girl'
+                });
+            } catch (error) {
+                showToast('خطأ: ' + error.message, 'error');
+                btn.innerHTML = 'إنشاء الحساب';
+            }
+        });
+
+        async function fetchInitialData() {
+            if (!currentUser) return;
+            DOM.contentArea.innerHTML = '<div class="flex h-full items-center justify-center"><div class="loader border-indigo-600 border-t-transparent w-10 h-10"></div></div>';
+            
+            try {
+                const profileDoc = await getDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'profile', 'data'));
+                if (profileDoc.exists()) {
+                    userData = profileDoc.data();
+                } else {
+                    userData = { name: 'طالب', grade: '', gender: 'boy' };
+                }
+
+                const subsSnapshot = await getDocs(collection(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'subscriptions'));
+                dbData.mySubscriptions = subsSnapshot.docs.map(d => d.id);
+
+                const colls = ['subjects', 'teachers', 'chapters', 'lectures'];
+                for(let col of colls) {
+                    const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', col));
+                    dbData[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                }
+                
+                // Sort lectures chronologically based on timestamp
+                dbData.lectures.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+                // إذا كان الطالب محدد مرحلته مسبقاً، ننتقل للمواد مباشرة
+                if (userData.grade && currentTab === 'lectures' && navStack.length === 0) {
+                    navStack.push({ type: 'grade', name: userData.grade });
+                }
+
+                renderCurrentTab();
+            } catch(e) {
+                console.error(e);
+                showToast("حدث خطأ في جلب البيانات", "error");
+            }
         }
 
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                DOM.authScreen.classList.add('hidden');
+                DOM.mainApp.classList.remove('hidden');
+                setTimeout(() => DOM.splashScreen.style.opacity = '0', 1000);
+                setTimeout(() => DOM.splashScreen.classList.add('hidden'), 1500);
+                fetchInitialData();
+            } else {
+                currentUser = null; userData = null;
+                setTimeout(() => DOM.splashScreen.style.opacity = '0', 1500);
+                setTimeout(() => DOM.splashScreen.classList.add('hidden'), 2000);
+                DOM.mainApp.classList.add('hidden');
+                DOM.authScreen.classList.remove('hidden');
+            }
+        });
+
+        window.switchTab = (tabName, btnElement) => {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+            currentTab = tabName;
+            
+            if(tabName === 'lectures' && userData && userData.grade) {
+                navStack = [{ type: 'grade', name: userData.grade }];
+            } else {
+                navStack = [];
+            }
+            renderCurrentTab();
+        };
+
+        window.goBack = () => {
+            if(navStack.length > 0) {
+                // منع الرجوع للمرحلة إذا كانت محفوظة
+                if(navStack.length === 1 && userData && userData.grade) {
+                    return; // لا ترجع، أنت في الصفحة الرئيسية للمواد
+                }
+                navStack.pop();
+                renderLecturesFlow();
+            }
+        };
+
+        function updateHeader(title, sub, showBack = false) {
+            DOM.headerTitle.textContent = title;
+            DOM.headerSub.textContent = sub;
+            // إخفاء زر الرجوع إذا كنا في أول صفحة بعد تحديد المرحلة
+            if(navStack.length === 1 && userData && userData.grade) showBack = false;
+            DOM.backBtn.style.display = showBack ? 'flex' : 'none';
+        }
+
+        function renderCurrentTab() {
+            DOM.contentArea.innerHTML = '';
+            DOM.backBtn.style.display = 'none';
+
+            if (currentTab === 'lectures') renderLecturesFlow();
+            else if (currentTab === 'ai') renderAI();
+            else if (currentTab === 'profile') renderProfile();
+        }
+
+        function renderLecturesFlow() {
+            const level = navStack.length;
+            DOM.contentArea.innerHTML = '';
+            
+            if (level === 0) {
+                updateHeader('المراحل الدراسية', 'اختر مرحلتك', false);
+                const grades = ['السادس العلمي', 'الثالث متوسط'];
+                DOM.contentArea.innerHTML = `
+                    <div class="space-y-4 mt-4">
+                        ${grades.map(grade => `
+                            <div onclick="selectGrade('${grade}')" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between active:scale-95 transition cursor-pointer">
+                                <div>
+                                    <h3 class="font-bold text-xl text-gray-800">${grade}</h3>
+                                    <p class="text-sm text-gray-500 mt-1">تحديد كمرحلتي الدراسية</p>
+                                </div>
+                                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl">
+                                    <i class="fas fa-chevron-left"></i>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (level === 1) {
+                const currentGrade = navStack[0].name;
+                updateHeader('المواد الدراسية', currentGrade, false);
+                
+                const subjects = dbData.subjects.filter(s => s.grade === currentGrade);
+                if(subjects.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-folder-open text-4xl mb-4"></i><p>لا توجد مواد مضافة</p></div>';
+
+                DOM.contentArea.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        ${subjects.map(sub => `
+                            <div onclick="pushNav({type: 'subject', id: '${sub.id}', name: '${sub.name}'})" class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center active:scale-95 transition cursor-pointer h-36 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-16 h-16 bg-indigo-50 rounded-bl-[2rem] -z-0"></div>
+                                <i class="fas fa-book text-3xl text-indigo-500 mb-3 z-10"></i>
+                                <h3 class="font-bold text-gray-800 z-10">${sub.name}</h3>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (level === 2) {
+                const currentGrade = navStack[0].name;
+                const currentSubject = navStack[1];
+                updateHeader('المدرسين', currentSubject.name, true);
+
+                const teachers = dbData.teachers.filter(t => t.grade === currentGrade && t.subject === currentSubject.id);
+                if(teachers.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-users text-4xl mb-4"></i><p>لا يوجد مدرسين</p></div>';
+
+                DOM.contentArea.innerHTML = `
+                    <div class="space-y-3 mt-2">
+                        ${teachers.map(teacher => `
+                            <div onclick="pushNav({type: 'teacher', id: '${teacher.id}', name: '${teacher.name}'})" class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-95 transition cursor-pointer">
+                                <div class="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center overflow-hidden shadow-md">
+                                    ${teacher.image ? `<img src="${teacher.image}" class="w-full h-full object-cover">` : `<i class="fas fa-chalkboard-teacher text-white text-2xl"></i>`}
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-800 text-lg">${teacher.name}</h3>
+                                    <p class="text-xs text-indigo-500 mt-1 font-semibold">استعراض الفصول</p>
+                                </div>
+                                <i class="fas fa-chevron-left text-gray-300"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (level === 3) {
+                const currentTeacher = navStack[2];
+                updateHeader('الفصول', currentTeacher.name, true);
+
+                const chapters = dbData.chapters.filter(c => c.teacher === currentTeacher.id);
+                if(chapters.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-layer-group text-4xl mb-4"></i><p>لا توجد فصول</p></div>';
+
+                DOM.contentArea.innerHTML = `
+                    <div class="space-y-3 mt-2">
+                        ${chapters.map((chap, idx) => `
+                            <div onclick="pushNav({type: 'chapter', id: '${chap.id}', name: '${chap.name}'})" class="bg-white p-5 rounded-3xl shadow-sm border-r-4 border-indigo-500 flex items-center justify-between active:scale-95 transition cursor-pointer">
+                                <div class="flex items-center gap-4">
+                                    <div class="text-3xl font-black text-gray-100">${String(idx+1).padStart(2, '0')}</div>
+                                    <h3 class="font-bold text-gray-800 text-lg">${chap.name}</h3>
+                                </div>
+                                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chevron-left"></i>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (level === 4) {
+                // قائمة المحاضرات بشكل نظيف بناءً على طلب المستخدم
+                const currentChapter = navStack[3];
+                updateHeader('المحاضرات', currentChapter.name, true);
+
+                const lectures = dbData.lectures.filter(l => l.chapter === currentChapter.id);
+                if(lectures.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-video-slash text-4xl mb-4"></i><p>لا توجد محاضرات</p></div>';
+
+                DOM.contentArea.innerHTML = `
+                    <div class="space-y-3 mt-2">
+                        ${lectures.map((lec, idx) => `
+                            <div onclick="openLectureDetails('${lec.id}')" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between active:scale-95 transition cursor-pointer group">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-gray-800">${lec.name}</h3>
+                                        <p class="text-xs text-gray-400 mt-1">محاضرة ${idx + 1}</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-left text-gray-300"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        window.selectGrade = async (grade) => {
+            try {
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'profile', 'data'), { grade });
+                userData.grade = grade;
+                navStack.push({ type: 'grade', name: grade });
+                renderLecturesFlow();
+            } catch(e) { showToast('حدث خطأ', 'error'); }
+        };
+
+        window.pushNav = (item) => {
+            navStack.push(item);
+            renderLecturesFlow();
+        };
+
+        window.openLectureDetails = (lectureId) => {
+            const lecture = dbData.lectures.find(l => l.id === lectureId);
+            const teacherId = lecture.teacher;
+            const isSubscribed = dbData.mySubscriptions.includes(teacherId) || currentUser.email === ADMIN_EMAIL;
+            const streamUrl = `https://questions-irfj.onrender.com/video?link=${encodeURIComponent(lecture.link)}`;
+            
+            const html = `
+                <div id="lectureDetailsScreen" class="absolute inset-0 z-50 bg-gray-50 flex flex-col">
+                    <!-- Top Area: Player or Lock -->
+                    <div class="relative w-full bg-black flex-shrink-0" style="aspect-ratio: 16/9;">
+                        ${isSubscribed ? `
+                            <video id="vidPlayer_${lecture.id}" controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture playsinline class="w-full h-full object-contain">
+                                <source src="${streamUrl}" type="video/mp4">
+                            </video>
+                            <button onclick="closeLectureDetails()" class="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white backdrop-blur-md transition z-10">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : `
+                            <div class="w-full h-full flex flex-col items-center justify-center bg-gray-900 text-white p-4 text-center">
+                                <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center text-3xl mb-3">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <h3 class="font-bold mb-2">المحاضرة مقفلة</h3>
+                                <button onclick="showCodeGate('${teacherId}', '${lecture.id}')" class="bg-indigo-600 px-6 py-2 rounded-full font-bold active:scale-95 transition">
+                                    <i class="fas fa-key ml-2"></i> أدخل الكود للمشاهدة
+                                </button>
+                                <button onclick="closeLectureDetails()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                    
+                    <!-- Bottom Area: Details -->
+                    <div class="flex-1 overflow-y-auto p-5 bg-white rounded-t-3xl -mt-4 relative z-10 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
+                        <h2 class="text-2xl font-black text-gray-800 mb-2">${lecture.name}</h2>
+                        <div class="flex gap-2 mb-6">
+                            <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold border border-indigo-100">محاضرة مسجلة</span>
+                        </div>
+                        <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">تفاصيل المحاضرة</h3>
+                        <p class="text-gray-600 leading-relaxed text-sm whitespace-pre-line">${lecture.details || 'لا توجد تفاصيل إضافية لهذه المحاضرة.'}</p>
+                    </div>
+                </div>
+            `;
+            
+            const container = document.createElement('div');
+            container.innerHTML = html;
+            document.body.appendChild(container.firstElementChild);
+
+            // Handle Video Resume
+            if(isSubscribed) {
+                const vid = document.getElementById(`vidPlayer_${lecture.id}`);
+                vid.addEventListener('contextmenu', e => e.preventDefault());
+                
+                const savedTime = localStorage.getItem(`vid_${lecture.id}`);
+                if(savedTime) {
+                    vid.addEventListener('loadedmetadata', () => {
+                        vid.currentTime = parseFloat(savedTime);
+                    });
+                }
+                vid.addEventListener('timeupdate', () => {
+                    localStorage.setItem(`vid_${lecture.id}`, vid.currentTime);
+                });
+            }
+        };
+
+        window.closeLectureDetails = () => {
+            const el = document.getElementById('lectureDetailsScreen');
+            if(el) {
+                const vid = el.querySelector('video');
+                if(vid) vid.pause();
+                el.remove();
+            }
+        };
+
+        window.showCodeGate = (teacherId, lectureId) => {
+            const html = `
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                        <i class="fas fa-unlock-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">تفعيل الاشتراك</h3>
+                    <p class="text-gray-500 text-sm mb-6">أدخل الكود الخاص بالأستاذ لفتح جميع محاضراته</p>
+                    <input type="text" id="codeVerifyInput" placeholder="DARB-XXXXXX" class="w-full border-2 border-gray-200 rounded-xl p-3 text-center text-lg font-bold tracking-widest uppercase focus:border-indigo-500 focus:outline-none mb-4">
+                    <button onclick="verifyCode('${teacherId}', '${lectureId}')" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg active:scale-95 transition mb-3">تفعيل الكود</button>
+                    <button onclick="closeModal()" class="w-full bg-gray-100 text-gray-600 font-bold rounded-xl py-3 active:scale-95 transition">إلغاء</button>
+                </div>
+            `;
+            showModal(html);
+        };
+
+        window.verifyCode = async (teacherId, lectureId) => {
+            const input = document.getElementById('codeVerifyInput').value.trim().toUpperCase();
+            if(!input) return showToast("أدخل الكود", "error");
+
+            try {
+                const codeDocRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'codes', input);
+                const codeDoc = await getDoc(codeDocRef);
+
+                if(!codeDoc.exists()) return showToast("الكود غير صحيح", "error");
+                const codeData = codeDoc.data();
+
+                if(codeData.used) return showToast("هذا الكود مستخدم مسبقاً", "error");
+                if(codeData.teacher !== teacherId) return showToast("الكود لا يطابق هذا الأستاذ", "error");
+
+                await updateDoc(codeDocRef, {
+                    used: true, usedBy: currentUser.uid, usedAt: new Date().toISOString()
+                });
+
+                await setDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'subscriptions', teacherId), { active: true });
+                
+                dbData.mySubscriptions.push(teacherId);
+                showToast("تم التفعيل بنجاح!");
+                closeModal();
+                
+                // Refresh Lecture Details
+                closeLectureDetails();
+                openLectureDetails(lectureId);
+
+            } catch(e) {
+                console.error(e);
+                showToast("خطأ في التحقق", "error");
+            }
+        };
+
+        function renderAI() {
+            updateHeader('المساعد الذكي', 'اسألني في المنهج', false);
+            DOM.contentArea.innerHTML = `
+                <div class="flex flex-col h-full relative pb-16">
+                    <div id="chatBox" class="flex-1 overflow-y-auto space-y-4 px-2 py-4 pb-20">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600"><i class="fas fa-robot text-sm"></i></div>
+                            <div class="chat-msg-bot p-3 max-w-[85%] text-sm leading-relaxed shadow-sm">
+                                أهلاً بك يا ${userData.name}! أنا مساعدك الذكي. جاهز أجاوبك على أي سؤال بخصوص منهج الثالث متوسط والسادس العلمي.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-100 p-3 flex gap-2 rounded-b-2xl shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+                        <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." class="flex-1 bg-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <button onclick="sendChatMessage()" class="w-12 h-12 bg-indigo-600 rounded-xl text-white flex items-center justify-center shadow-md active:scale-95 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.sendChatMessage = async () => {
+            const inputEl = document.getElementById('chatInput');
+            const msg = inputEl.value.trim();
+            if(!msg) return;
+
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `
+                <div class="flex gap-3 flex-row-reverse">
+                    <div class="chat-msg-user p-3 max-w-[85%] text-sm leading-relaxed shadow-sm">${msg}</div>
+                </div>
+            `;
+            inputEl.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            chatBox.innerHTML += `
+                <div id="${loadingId}" class="flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600"><i class="fas fa-robot text-sm"></i></div>
+                    <div class="chat-msg-bot p-3 text-sm flex items-center gap-2">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+            `;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const systemPrompt = "أنت مدرس عراقي خبير. تخصصك فقط مناهج العراق للسادس العلمي والثالث متوسط. جاوب بلهجة عراقية محترمة ومبسطة. ممنوع الخروج عن المنهج.";
+                // Using stable model as requested
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: msg }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+                
+                const result = await response.json();
+                document.getElementById(loadingId).remove();
+
+                let reply = "عذراً، حدث خطأ في النظام.";
+                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                    reply = result.candidates[0].content.parts[0].text;
+                }
+
+                const formattedReply = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                chatBox.innerHTML += `
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600"><i class="fas fa-robot text-sm"></i></div>
+                        <div class="chat-msg-bot p-3 max-w-[85%] text-sm leading-relaxed shadow-sm">${formattedReply}</div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                chatBox.innerHTML += `<div class="flex gap-3"><div class="chat-msg-bot text-red-500 p-3 text-sm">حدث خطأ في الاتصال.</div></div>`;
+            }
+        };
+
+        function renderProfile() {
+            updateHeader('حسابي', 'الملف الشخصي', false);
+            const isAdmin = currentUser.email === ADMIN_EMAIL;
+            const avatarUrl = userData.gender === 'girl' 
+                ? 'https://api.dicebear.com/7.x/notionists/svg?seed=Jasmine&backgroundColor=fbcfe8'
+                : 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=c7d2fe';
+
+            DOM.contentArea.innerHTML = `
+                <div class="space-y-4 mt-4">
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-10"></div>
+                        <img src="${avatarUrl}" class="w-24 h-24 mx-auto rounded-full p-1 shadow-md relative z-10 border-2 border-white mb-3">
+                        <h2 class="text-xl font-bold text-gray-800">${userData.name}</h2>
+                        <p class="text-sm text-gray-500">${currentUser.email}</p>
+                        <p class="text-xs font-bold text-indigo-600 mt-2 bg-indigo-50 inline-block px-4 py-1.5 rounded-full">${userData.grade || 'المرحلة غير محددة'}</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
+                        <button onclick="showPricingModal()" class="w-full p-4 flex items-center justify-between active:scale-95 transition border-b border-gray-50">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-yellow-50 text-yellow-600 rounded-xl flex items-center justify-center"><i class="fas fa-tags"></i></div>
+                                <span class="font-bold text-gray-700">أسعار الاشتراكات</span>
+                            </div>
+                            <i class="fas fa-chevron-left text-gray-300 text-sm"></i>
+                        </button>
+                        ${isAdmin ? `
+                        <button onclick="openAdminDashboard()" class="w-full p-4 flex items-center justify-between active:scale-95 transition">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center"><i class="fas fa-cogs"></i></div>
+                                <span class="font-bold text-gray-700">لوحة الإدارة (صلاحيات كاملة)</span>
+                            </div>
+                            <i class="fas fa-chevron-left text-gray-300 text-sm"></i>
+                        </button>` : ''}
+                    </div>
+
+                    <button onclick="signOut(auth)" class="w-full bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center justify-center gap-2 text-red-600 font-bold active:scale-95 transition mt-6">
+                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                    </button>
+                </div>
+            `;
+        }
+
+        window.showPricingModal = () => {
+            const html = `
+                <div class="relative text-center">
+                    <button onclick="closeModal()" class="absolute -top-2 -right-2 w-8 h-8 bg-gray-100 rounded-full text-gray-500 flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
+                    <div class="w-16 h-16 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner"><i class="fas fa-gem"></i></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">الاشتراكات المميزة</h3>
+                    <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden mb-4">
+                        <h4 class="text-lg font-bold mb-1">كود المادة الواحدة</h4>
+                        <p class="text-indigo-100 text-sm mb-4">يفتح جميع فصول ومحاضرات الأستاذ</p>
+                        <div class="text-3xl font-black">50,000 <span class="text-sm font-normal">دينار</span></div>
+                    </div>
+                    <a href="https://t.me/mslmr19" target="_blank" class="w-full flex items-center justify-center gap-3 bg-[#0088cc] text-white font-bold rounded-xl py-3 shadow hover:bg-[#0077b5] transition active:scale-95">
+                        <i class="fab fa-telegram-plane text-xl"></i> لشراء الأكواد تواصل معنا
+                    </a>
+                </div>
+            `;
+            showModal(html);
+        };
+
+        window.openAdminDashboard = () => {
+            const master = document.getElementById('adminContainerMaster');
+            master.innerHTML = `
+                <header class="bg-gray-900 text-white px-4 py-4 flex justify-between items-center shadow-lg">
+                    <h2 class="font-bold text-lg"><i class="fas fa-shield-alt ml-2 text-indigo-400"></i> لوحة التحكم</h2>
+                    <button onclick="closeAdminDashboard()" class="w-8 h-8 bg-white/10 hover:bg-red-500 rounded-full flex items-center justify-center transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </header>
+                <div class="flex-1 overflow-y-auto p-4 bg-gray-100" id="adminMainScreen">
+                    <div class="grid grid-cols-1 gap-4">
+                        <button onclick="openAdminView('subjects')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-blue-500 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-book"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة المواد</h3><p class="text-xs text-gray-500">إضافة وتعديل وحذف</p></div>
+                        </button>
+                        <button onclick="openAdminView('teachers')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-green-500 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-chalkboard-teacher"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة الأساتذة</h3><p class="text-xs text-gray-500">إضافة مع صورة، وتعديل</p></div>
+                        </button>
+                        <button onclick="openAdminView('chapters')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-purple-500 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-layer-group"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة الفصول</h3><p class="text-xs text-gray-500">ربط بالأستاذ والمادة</p></div>
+                        </button>
+                        <button onclick="openAdminView('lectures')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-red-500 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-video"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة المحاضرات</h3><p class="text-xs text-gray-500">إضافة مع تفاصيل نصية</p></div>
+                        </button>
+                        <button onclick="openAdminView('codes')" class="bg-gray-800 p-5 rounded-2xl shadow-lg border-l-4 border-yellow-400 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-gray-700 text-yellow-400 rounded-full flex items-center justify-center text-xl"><i class="fas fa-key"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-white">إدارة الأكواد</h3><p class="text-xs text-gray-400">توليد، حذف، متابعة الحالات</p></div>
+                        </button>
+                    </div>
+                </div>
+                <div id="adminSubView" class="hidden absolute inset-0 bg-gray-50 z-10 flex flex-col"></div>
+            `;
+            master.classList.remove('hidden');
+        };
+
+        window.closeAdminDashboard = () => document.getElementById('adminContainerMaster').classList.add('hidden');
+        window.closeAdminSubView = () => {
+            document.getElementById('adminSubView').classList.add('hidden');
+            document.getElementById('adminSubView').innerHTML = '';
+        };
+
+        window.openAdminView = async (type) => {
+            const subView = document.getElementById('adminSubView');
+            subView.innerHTML = `
+                <header class="bg-white px-4 py-4 flex items-center gap-3 shadow-sm">
+                    <button onclick="closeAdminSubView()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center active:scale-95"><i class="fas fa-arrow-right"></i></button>
+                    <h2 class="font-bold text-lg text-gray-800" id="subViewTitle">جاري التحميل...</h2>
+                </header>
+                <div class="flex-1 overflow-y-auto p-4" id="subViewContent"></div>
+            `;
+            subView.classList.remove('hidden');
+            
+            const content = document.getElementById('subViewContent');
+            const title = document.getElementById('subViewTitle');
+
+            if (type === 'subjects') {
+                title.innerText = 'إدارة المواد';
+                content.innerHTML = `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                        <select id="v_sub_grade" class="w-full mb-2 border rounded-xl p-3 bg-gray-50"><option value="السادس العلمي">السادس العلمي</option><option value="الثالث متوسط">الثالث متوسط</option></select>
+                        <input type="text" id="v_sub_name" placeholder="اسم المادة" class="w-full mb-3 border rounded-xl p-3 bg-gray-50">
+                        <button onclick="v_addSubject()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl">إضافة المادة</button>
+                    </div>
+                    <h3 class="font-bold mb-3 text-gray-700">المواد الحالية:</h3>
+                    <div class="space-y-2">
+                        ${dbData.subjects.map(s => `
+                            <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
+                                <div><span class="font-bold">${s.name}</span> <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">${s.grade}</span></div>
+                                <button onclick="v_delItem('subjects', '${s.id}')" class="text-red-500 w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } 
+            else if (type === 'teachers') {
+                title.innerText = 'إدارة الأساتذة';
+                content.innerHTML = `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                        <select id="v_tch_sub" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
+                            ${dbData.subjects.map(s => `<option value="${s.id}">${s.grade} - ${s.name}</option>`).join('')}
+                        </select>
+                        <input type="text" id="v_tch_name" placeholder="اسم الأستاذ" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
+                        <label class="block text-sm text-gray-500 mb-1">صورة الأستاذ (اختياري):</label>
+                        <input type="file" id="v_tch_img" accept="image/*" class="w-full mb-3 border rounded-xl p-2 bg-gray-50 text-sm">
+                        <button onclick="v_addTeacher()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl">إضافة الأستاذ</button>
+                    </div>
+                    <div class="space-y-2">
+                        ${dbData.teachers.map(t => {
+                            const subName = dbData.subjects.find(x => x.id === t.subject)?.name || '';
+                            return `
+                            <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-gray-200 overflow-hidden">${t.image ? `<img src="${t.image}" class="w-full h-full object-cover">` : ''}</div>
+                                    <div><div class="font-bold text-sm">${t.name}</div><div class="text-xs text-gray-500">${t.grade} - ${subName}</div></div>
+                                </div>
+                                <button onclick="v_delItem('teachers', '${t.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
+                            </div>`
+                        }).join('')}
+                    </div>
+                `;
+            }
+            else if (type === 'chapters') {
+                title.innerText = 'إدارة الفصول';
+                content.innerHTML = `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                        <select id="v_chp_tch" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
+                            ${dbData.teachers.map(t => `<option value="${t.id}">${t.name} (${t.grade})</option>`).join('')}
+                        </select>
+                        <input type="text" id="v_chp_name" placeholder="اسم الفصل (مثال: الفصل الأول)" class="w-full mb-3 border rounded-xl p-3 bg-gray-50">
+                        <button onclick="v_addChapter()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl">إضافة الفصل</button>
+                    </div>
+                    <div class="space-y-2">
+                        ${dbData.chapters.map(c => {
+                            const tName = dbData.teachers.find(x => x.id === c.teacher)?.name || '';
+                            return `
+                            <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
+                                <div><div class="font-bold text-sm">${c.name}</div><div class="text-xs text-gray-500">أ. ${tName}</div></div>
+                                <button onclick="v_delItem('chapters', '${c.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
+                            </div>`
+                        }).join('')}
+                    </div>
+                `;
+            }
+            else if (type === 'lectures') {
+                title.innerText = 'إدارة المحاضرات';
+                content.innerHTML = `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                        <select id="v_lec_chp" class="w-full mb-2 border rounded-xl p-3 bg-gray-50 text-sm">
+                            ${dbData.chapters.map(c => {
+                                const t = dbData.teachers.find(x => x.id === c.teacher);
+                                return `<option value="${c.id}">${c.name} - ${t?.name || ''}</option>`;
+                            }).join('')}
+                        </select>
+                        <input type="text" id="v_lec_name" placeholder="اسم المحاضرة" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
+                        <input type="url" id="v_lec_link" placeholder="رابط رسالة التلكرام" class="w-full mb-2 border rounded-xl p-3 bg-gray-50 text-left" dir="ltr">
+                        <textarea id="v_lec_details" placeholder="التفاصيل الاضافية للمحاضرة..." class="w-full mb-3 border rounded-xl p-3 bg-gray-50 h-24 resize-none"></textarea>
+                        <button onclick="v_addLecture()" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl">نشر المحاضرة</button>
+                    </div>
+                    <div class="space-y-2">
+                        ${dbData.lectures.map(l => `
+                            <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
+                                <div><div class="font-bold text-sm">${l.name}</div><div class="text-xs text-gray-400 truncate w-48">${l.link}</div></div>
+                                <button onclick="v_delItem('lectures', '${l.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            else if (type === 'codes') {
+                title.innerText = 'إدارة الأكواد';
+                
+                // Fetch codes freshly
+                let html = '<div class="text-center py-10"><div class="loader mx-auto border-indigo-500 border-t-transparent"></div></div>';
+                content.innerHTML = html;
+                
+                try {
+                    const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'codes'));
+                    dbData.codes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    
+                    content.innerHTML = `
+                        <div class="bg-gray-800 p-4 rounded-2xl shadow-lg mb-6 border border-gray-700">
+                            <select id="v_cod_tch" class="w-full mb-3 border border-gray-600 rounded-xl p-3 bg-gray-700 text-white">
+                                ${dbData.teachers.map(t => `<option value="${t.id}">${t.grade} - ${t.name}</option>`).join('')}
+                            </select>
+                            <button onclick="v_addCode()" class="w-full bg-yellow-500 text-gray-900 font-bold py-3 rounded-xl active:bg-yellow-600 shadow-md">إنشاء كود جديد (لاستخدام واحد)</button>
+                        </div>
+                        <h3 class="font-bold mb-3 text-gray-700">سجل الأكواد:</h3>
+                        <div class="space-y-3">
+                            ${dbData.codes.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map(c => {
+                                const tName = dbData.teachers.find(x => x.id === c.teacher)?.name || 'مجهول';
+                                const statusClass = c.used ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700';
+                                const statusText = c.used ? 'مستخدم (غير نشط)' : 'جديد (نشط)';
+                                return `
+                                <div class="bg-white p-4 rounded-xl border flex flex-col shadow-sm gap-2">
+                                    <div class="flex justify-between items-start">
+                                        <div class="font-mono font-bold text-lg tracking-widest text-gray-800 select-all">${c.id}</div>
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded ${statusClass}">${statusText}</span>
+                                    </div>
+                                    <div class="text-xs text-gray-500 border-b pb-2">أ. ${tName}</div>
+                                    <button onclick="v_delCode('${c.id}', '${c.usedBy || ''}', '${c.teacher}')" class="w-full mt-1 bg-red-50 text-red-600 text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2">
+                                        <i class="fas fa-trash"></i> حذف الكود ${c.used ? '(وإلغاء الصلاحية)' : ''}
+                                    </button>
+                                </div>`
+                            }).join('')}
+                        </div>
+                    `;
+                } catch(e) {
+                    content.innerHTML = '<div class="text-red-500 text-center">خطأ في جلب الأكواد</div>';
+                }
+            }
+        };
+
+        window.v_addSubject = async () => {
+            const grade = document.getElementById('v_sub_grade').value;
+            const name = document.getElementById('v_sub_name').value.trim();
+            if(!name) return showToast('اكتب الاسم', 'error');
+            try {
+                const docRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'subjects'));
+                await setDoc(docRef, { grade, name });
+                dbData.subjects.push({ id: docRef.id, grade, name });
+                showToast('تم'); openAdminView('subjects');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
+        window.v_addTeacher = async () => {
+            const subId = document.getElementById('v_tch_sub').value;
+            const name = document.getElementById('v_tch_name').value.trim();
+            const imgFile = document.getElementById('v_tch_img').files[0];
+            if(!name) return showToast('اكتب الاسم', 'error');
+            
+            let base64Img = null;
+            if(imgFile) base64Img = await fileToBase64(imgFile);
+
+            const subject = dbData.subjects.find(s => s.id === subId);
+            try {
+                const docRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'teachers'));
+                const data = { grade: subject.grade, subject: subId, name, image: base64Img };
+                await setDoc(docRef, data);
+                dbData.teachers.push({ id: docRef.id, ...data });
+                showToast('تم'); openAdminView('teachers');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
+        window.v_addChapter = async () => {
+            const teacherId = document.getElementById('v_chp_tch').value;
+            const name = document.getElementById('v_chp_name').value.trim();
+            if(!name) return;
+            const teacher = dbData.teachers.find(t => t.id === teacherId);
+            try {
+                const docRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'chapters'));
+                const data = { grade: teacher.grade, subject: teacher.subject, teacher: teacherId, name };
+                await setDoc(docRef, data);
+                dbData.chapters.push({ id: docRef.id, ...data });
+                showToast('تم'); openAdminView('chapters');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
+        window.v_addLecture = async () => {
+            const chapterId = document.getElementById('v_lec_chp').value;
+            const name = document.getElementById('v_lec_name').value.trim();
+            const link = document.getElementById('v_lec_link').value.trim();
+            const details = document.getElementById('v_lec_details').value.trim();
+            if(!name || !link) return showToast('الاسم والرابط مطلوبان', 'error');
+            const chapter = dbData.chapters.find(c => c.id === chapterId);
+            try {
+                const docRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'lectures'));
+                const data = { grade: chapter.grade, subject: chapter.subject, teacher: chapter.teacher, chapter: chapterId, name, link, details, timestamp: Date.now() };
+                await setDoc(docRef, data);
+                dbData.lectures.push({ id: docRef.id, ...data });
+                showToast('تم'); openAdminView('lectures');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
+        window.v_addCode = async () => {
+            const teacherId = document.getElementById('v_cod_tch').value;
+            const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const codeId = `DARB-${randomStr}`;
+            try {
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'codes', codeId), {
+                    teacher: teacherId, used: false, usedBy: null, createdAt: new Date().toISOString()
+                });
+                showToast('تم إنشاء الكود'); openAdminView('codes');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
+        window.v_delItem = async (col, id) => {
+            if(!confirm('هل أنت متأكد من الحذف؟')) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id));
+                dbData[col] = dbData[col].filter(x => x.id !== id);
+                showToast('تم الحذف'); openAdminView(col);
+            } catch(e) { showToast('خطأ بالحذف', 'error'); }
+        };
+
+        window.v_delCode = async (codeId, usedByUserId, teacherId) => {
+            if(!confirm('هل أنت متأكد؟ إذا كان مستخدماً سيتم سحب الصلاحية من الطالب.')) return;
+            try {
+                if(usedByUserId && teacherId) {
+                    // سحب الصلاحية
+                    await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', usedByUserId, 'subscriptions', teacherId));
+                }
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'codes', codeId));
+                showToast('تم حذف الكود وإلغاء الصلاحية (إن وجدت)'); openAdminView('codes');
+            } catch(e) { showToast('خطأ بالحذف', 'error'); }
+        };
     </script>
 </body>
 </html>
