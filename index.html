@@ -2,113 +2,74 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- منع التكبير والتصغير ليعمل كتطبيق حقيقي -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة درب التعليمية</title>
+    <title>منصة طموح التعليمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --primary: #4F46E5;
             --primary-dark: #4338CA;
             --secondary: #10B981;
-            --bg-color: #F8FAFC; /* لون خلفية أريح للعين */
+            --bg-color: #F8FAFC;
             --text-main: #1F2937;
+            --danger: #EF4444;
         }
-
+        * { -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Cairo', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            /* منع النسخ واللصق والتحديد */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
             overscroll-behavior-y: none;
+            margin: 0;
+            padding: 0;
         }
-
         input, textarea, select {
             font-size: 16px !important;
             -webkit-user-select: auto;
             user-select: auto;
         }
-
-        /* تحسين شاشة تسجيل الدخول */
         .auth-bg {
             background: linear-gradient(135deg, #1e1b4b, #312e81, #4338ca);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
-
         .glass-card {
-            background: rgba(17, 24, 39, 0.7); /* لون داكن شبه شفاف */
+            background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-
         .input-dark {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255,255,255,0.1);
             color: white;
         }
-        .input-dark::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-        .input-dark:focus {
-            border-color: var(--primary);
-            background: rgba(0, 0, 0, 0.6);
-        }
-
+        .input-dark::placeholder { color: rgba(255,255,255,0.5); }
+        .input-dark:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.6); outline: none; }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
-        .bottom-nav {
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-        }
-
+        .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
         .nav-item.active { color: var(--primary); }
-        .nav-item.active .nav-icon {
-            transform: translateY(-4px);
-            transition: all 0.3s ease;
-        }
-
-        video {
-            width: 100%;
-            background: #000;
-        }
-
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
-
+        .nav-item.active .nav-icon { transform: translateY(-4px); transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
         .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 99999;
-            transition: all 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 99999; transition: all 0.3s ease; opacity: 0; pointer-events: none;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(10px);
-        }
-
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(10px); }
         .chat-msg-user { background: var(--primary); color: white; border-radius: 16px 16px 0 16px; }
         .chat-msg-bot { background: white; color: var(--text-main); border-radius: 16px 16px 16px 0; border: 1px solid #e5e7eb; }
-        
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid var(--primary);
@@ -118,80 +79,244 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Splash Screen Animation */
-        .splash-logo {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        /* ================== INTRO SPLASH ================== */
+        #introSplash {
+            position: fixed; inset: 0; z-index: 999999;
+            background: #C1121F;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1), visibility 0.8s;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: .7; transform: scale(1.05); }
+        #introSplash.hide { opacity: 0; visibility: hidden; }
+        #introSplash svg {
+            width: 70vw; max-width: 480px; height: auto;
+            filter: drop-shadow(0 8px 24px rgba(0,0,0,0.35));
+        }
+        #introSplash .strokePath {
+            fill: none;
+            stroke: #FFFFFF;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 800;
+            stroke-dashoffset: 800;
+            animation: drawStroke 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        }
+        #introSplash .wordGlow {
+            font-family: 'Aref Ruqaa', 'Cairo', serif;
+            font-size: 200px;
+            font-weight: 700;
+            fill: #FFFFFF;
+            opacity: 0;
+            animation: revealWord 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
+        }
+        @keyframes drawStroke {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes revealWord {
+            0% { opacity: 0; transform: scale(0.9); transform-origin: center; }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        #introSplash .lineDecor {
+            fill: none; stroke: #FFFFFF; stroke-width: 2; opacity: 0.7;
+            stroke-dasharray: 300; stroke-dashoffset: 300;
+            animation: drawStroke 1s cubic-bezier(0.65, 0, 0.35, 1) 2.1s forwards;
+        }
+
+        /* ================== CUSTOM VIDEO PLAYER ================== */
+        .videoWrapper {
+            position: relative;
+            width: 100%;
+            background: #000;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            user-select: none;
+        }
+        .videoWrapper.fullscreen-mode {
+            position: fixed; inset: 0; z-index: 9999;
+            aspect-ratio: auto; height: 100vh; width: 100vw;
+        }
+        .videoWrapper.fullscreen-mode video {
+            height: 100vh; width: 100vw; object-fit: contain;
+        }
+        .videoWrapper video {
+            width: 100%; height: 100%; object-fit: contain;
+            background: #000;
+            pointer-events: none;
+        }
+        .videoWrapper video::-webkit-media-controls,
+        .videoWrapper video::-webkit-media-controls-panel,
+        .videoWrapper video::-webkit-media-controls-play-button,
+        .videoWrapper video::-webkit-media-controls-start-playback-button,
+        .videoWrapper video::-webkit-media-controls-download-button,
+        .videoWrapper video::-webkit-media-controls-fullscreen-button {
+            display: none !important;
+            -webkit-appearance: none !important;
+        }
+        .videoWrapper video::-webkit-media-controls-enclosure {
+            display: none !important;
+        }
+        .customOverlay {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: space-between;
+            z-index: 5;
+        }
+        .topBar {
+            display: flex; justify-content: flex-end; padding: 12px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent);
+        }
+        .bottomBar {
+            padding: 10px 12px 14px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .progressRow { display: flex; align-items: center; gap: 10px; }
+        .progressBar {
+            flex: 1; height: 5px; background: rgba(255,255,255,0.3);
+            border-radius: 4px; cursor: pointer; position: relative;
+        }
+        .progressFill {
+            height: 100%; background: var(--danger);
+            border-radius: 4px; width: 0%;
+            position: relative;
+        }
+        .progressFill::after {
+            content: ''; position: absolute; right: -6px; top: 50%;
+            transform: translateY(-50%);
+            width: 12px; height: 12px; border-radius: 50%;
+            background: var(--danger); box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+        .controlsRow {
+            display: flex; align-items: center; justify-content: space-between;
+            color: white; gap: 12px;
+        }
+        .ctrlBtn {
+            background: rgba(0,0,0,0.35); border: none; color: white;
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 14px;
+            transition: background 0.2s;
+        }
+        .ctrlBtn:active { background: rgba(0,0,0,0.7); }
+        .timeLabel {
+            font-size: 12px; font-weight: 700;
+            background: rgba(0,0,0,0.4); padding: 4px 10px;
+            border-radius: 12px; direction: ltr;
+        }
+        .playPauseFloat {
+            position: absolute; bottom: 80px; right: 14px;
+            width: 52px; height: 52px;
+            background: rgba(239, 68, 68, 0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 20px; z-index: 6;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+            cursor: pointer;
+        }
+        .playPauseFloat:active { transform: scale(0.92); }
+        .centerBigPlay {
+            position: absolute; inset: 0; display: flex;
+            align-items: center; justify-content: center; z-index: 4;
+        }
+        .centerBigPlay .circle {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: rgba(255,255,255,0.85);
+            display: flex; align-items: center; justify-content: center;
+            color: #111; font-size: 26px;
+        }
+
+        /* ================== EXAM MODAL ================== */
+        .examTab {
+            padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; border: 2px solid transparent;
+        }
+        .examTab.active { background: var(--primary); color: white; }
+        .examTab.locked { opacity: 0.5; }
+        .examImg { width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .uploadBox {
+            border: 2px dashed #cbd5e1; border-radius: 12px; padding: 16px;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .uploadBox:active { border-color: var(--primary); background: #EEF2FF; }
+        .previewThumb {
+            width: 60px; height: 60px; border-radius: 8px; object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+        .rulesBox {
+            border: 2px solid var(--danger); border-radius: 12px;
+            padding: 12px; background: #FEF2F2;
+        }
+        .rulesBox .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--danger); display: inline-block; margin-left: 6px;
         }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col relative">
 
+    <!-- ============ INTRO SPLASH (طموح) ============ -->
+    <div id="introSplash">
+        <svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- خطوط زخرفية مرسومة -->
+            <path class="lineDecor" d="M 40 60 Q 150 40 260 55" />
+            <path class="lineDecor" d="M 240 250 Q 350 265 460 245" />
+            <!-- كلمة طموح -->
+            <text class="wordGlow" x="250" y="180" text-anchor="middle">طموح</text>
+            <!-- ضربات رسم تحاكي الكتابة اليدوية -->
+            <path class="strokePath" d="M 90 170 Q 120 140 160 165" style="animation-delay: 0s;" />
+            <path class="strokePath" d="M 160 165 Q 200 190 230 160" style="animation-delay: 0.25s;" />
+            <path class="strokePath" d="M 230 160 Q 270 130 310 165" style="animation-delay: 0.5s;" />
+            <path class="strokePath" d="M 310 165 Q 350 190 400 160" style="animation-delay: 0.75s;" />
+            <path class="strokePath" d="M 100 200 Q 250 225 400 200" style="animation-delay: 1s;" />
+        </svg>
+    </div>
+
     <!-- التنبيهات -->
     <div id="toast" class="toast px-6 py-3 rounded-full text-white font-semibold shadow-lg"></div>
 
-    <!-- نافذة منبثقة (Modal) -->
+    <!-- Modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div id="modalContent" class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
-        </div>
+        <div id="modalContent" class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto"></div>
     </div>
 
-    <!-- 0. شاشة البداية (Splash Screen) -->
-    <div id="splashScreen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="w-28 h-28 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl splash-logo mb-6">
+    <!-- Splash Screen القديم (يستخدم بعد الدخول) -->
+    <div id="splashScreen" class="absolute inset-0 z-40 bg-white flex flex-col items-center justify-center transition-opacity duration-500 hidden">
+        <div class="w-28 h-28 bg-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl mb-6">
             <i class="fas fa-graduation-cap text-6xl text-white"></i>
         </div>
-        <h1 class="text-3xl font-black text-gray-800 tracking-tight">منصة درب</h1>
+        <h1 class="text-3xl font-black text-gray-800 tracking-tight">منصة طموح</h1>
         <p class="text-gray-500 mt-2 font-semibold">طريقك نحو التفوق</p>
-        <div class="loader mt-8 border-indigo-200 border-t-indigo-600"></div>
     </div>
 
-    <!-- 1. شاشة تسجيل الدخول / إنشاء حساب (تم تحسين التصميم) -->
-    <div id="authScreen" class="absolute inset-0 z-40 auth-bg flex items-center justify-center p-4 overflow-y-auto hidden">
+    <!-- Auth Screen -->
+    <div id="authScreen" class="absolute inset-0 z-30 auth-bg flex items-center justify-center p-4 overflow-y-auto hidden">
         <div class="glass-card w-full max-w-sm rounded-[2rem] p-8 relative">
             <div class="text-center mb-8">
                 <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
                     <i class="fas fa-graduation-cap text-4xl text-white"></i>
                 </div>
                 <h1 class="text-3xl font-bold text-white mb-2">مرحباً بك</h1>
-                <p class="text-gray-300 text-sm">سجل دخولك للمتابعة</p>
+                <p class="text-gray-300 text-sm">منصة طموح التعليمية</p>
             </div>
-
             <form id="loginForm" class="space-y-4">
-                <div>
-                    <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
-                </div>
-                <div>
-                    <input type="password" id="loginPassword" placeholder="الرمز السري" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg hover:bg-indigo-500 transition transform active:scale-95 mt-2">تسجيل الدخول</button>
+                <input type="email" id="loginEmail" placeholder="البريد الإلكتروني" class="w-full input-dark rounded-xl px-4 py-3 transition" required>
+                <input type="password" id="loginPassword" placeholder="الرمز السري" class="w-full input-dark rounded-xl px-4 py-3 transition" required>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg hover:bg-indigo-500 transition active:scale-95 mt-2">تسجيل الدخول</button>
                 <p class="text-center text-gray-300 text-sm mt-6 cursor-pointer hover:text-white transition" onclick="toggleAuth('signup')">لا تملك حساب؟ <span class="font-bold text-indigo-400">أنشئ حساب الآن</span></p>
             </form>
-
             <form id="signupForm" class="space-y-4 hidden">
-                <div>
-                    <input type="text" id="signupName" placeholder="الاسم الثلاثي" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
-                </div>
+                <input type="text" id="signupName" placeholder="الاسم الثلاثي" class="w-full input-dark rounded-xl px-4 py-3 transition" required>
                 <div class="relative">
                     <span class="absolute left-4 top-3.5 text-gray-400" dir="ltr">+964</span>
-                    <input type="tel" id="signupPhone" placeholder="07XXXXXXXXX" pattern="07[0-9]{9}" title="يجب أن يبدأ ب 07 ويتكون من 11 رقم" class="w-full input-dark rounded-xl pl-16 pr-4 py-3 focus:outline-none transition text-right" required>
+                    <input type="tel" id="signupPhone" placeholder="07XXXXXXXXX" pattern="07[0-9]{9}" class="w-full input-dark rounded-xl pl-16 pr-4 py-3 transition text-right" required>
                 </div>
-                <div>
-                    <input type="email" id="signupEmail" placeholder="البريد الإلكتروني" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
-                </div>
-                <div>
-                    <input type="password" id="signupPassword" placeholder="رمز الحساب" class="w-full input-dark rounded-xl px-4 py-3 focus:outline-none transition" required>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg hover:bg-indigo-500 transition transform active:scale-95 mt-2">إنشاء الحساب</button>
+                <input type="email" id="signupEmail" placeholder="البريد الإلكتروني" class="w-full input-dark rounded-xl px-4 py-3 transition" required>
+                <input type="password" id="signupPassword" placeholder="رمز الحساب" class="w-full input-dark rounded-xl px-4 py-3 transition" required>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg hover:bg-indigo-500 transition active:scale-95 mt-2">إنشاء الحساب</button>
                 <p class="text-center text-gray-300 text-sm mt-6 cursor-pointer hover:text-white transition" onclick="toggleAuth('login')">لديك حساب؟ <span class="font-bold text-indigo-400">سجل دخولك</span></p>
             </form>
         </div>
     </div>
 
-    <!-- 2. واجهة التطبيق الرئيسية -->
+    <!-- Main App -->
     <div id="mainApp" class="hidden flex-1 h-full flex flex-col relative pb-[70px]">
         <header class="bg-white shadow-sm px-4 py-3 flex justify-between items-center z-10 rounded-b-2xl">
             <div class="flex items-center gap-3">
@@ -200,23 +325,20 @@
                 </div>
                 <div>
                     <h2 class="font-bold text-gray-800 text-lg leading-tight" id="headerTitle">المحاضرات</h2>
-                    <p class="text-xs text-gray-500" id="headerSub">منصة درب</p>
+                    <p class="text-xs text-gray-500" id="headerSub">منصة طموح</p>
                 </div>
             </div>
             <button id="backBtn" class="hidden w-10 h-10 bg-gray-100 rounded-full items-center justify-center text-gray-600 active:bg-gray-200 transition" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i>
             </button>
         </header>
-
-        <main id="contentArea" class="flex-1 overflow-y-auto p-4 scroll-smooth bg-gray-50/50">
-        </main>
-
+        <main id="contentArea" class="flex-1 overflow-y-auto p-4 scroll-smooth bg-gray-50/50"></main>
         <nav class="bottom-nav bg-white fixed bottom-0 w-full h-[70px] rounded-t-3xl flex justify-around items-center px-2 z-20">
             <button class="nav-item active flex flex-col items-center justify-center w-20 h-full" onclick="switchTab('lectures', this)">
                 <div class="nav-icon text-xl mb-1"><i class="fas fa-play-circle"></i></div>
                 <span class="text-[10px] font-bold">المحاضرات</span>
             </button>
-            <button class="nav-item flex flex-col items-center justify-center w-20 h-full relative" onclick="switchTab('ai', this)">
+            <button class="nav-item flex flex-col items-center justify-center w-20 h-full" onclick="switchTab('ai', this)">
                 <div class="nav-icon text-xl mb-1"><i class="fas fa-robot"></i></div>
                 <span class="text-[10px] font-bold">المساعد الذكي</span>
             </button>
@@ -227,7 +349,7 @@
         </nav>
     </div>
 
-    <!-- حاوية لوحة التحكم الحرة -->
+    <!-- Admin Master -->
     <div id="adminContainerMaster" class="hidden absolute inset-0 z-[100] bg-gray-100 flex flex-col h-full w-full overflow-hidden"></div>
 
     <script type="module">
@@ -244,24 +366,31 @@
             appId: "1:705925344755:web:e00882d29cf122d5c8f686",
             measurementId: "G-5G66M3LYJ6"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const APP_ID = 'darb-56124'; 
+        const APP_ID = 'darb-56124';
         const ADMIN_EMAIL = "mslmalmyaly223@gmail.com";
         const GEMINI_API_KEY = "UPWMTf9wd0h9rs9yAA-e09TiinUL1G5PBBySazIA";
+
+        // نماذج Gemini مع تبديل تلقائي
+        const GEMINI_MODELS = [
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-8b"
+        ];
 
         let currentUser = null;
         let userData = null;
         let currentTab = 'lectures';
-        let navStack = []; 
-
+        let navStack = [];
         let dbData = {
-            subjects: [], teachers: [], chapters: [], lectures: [], mySubscriptions: [], codes: []
+            subjects: [], teachers: [], chapters: [], lectures: [],
+            mySubscriptions: [], codes: [], exams: []
         };
 
         const DOM = {
+            introSplash: document.getElementById('introSplash'),
             splashScreen: document.getElementById('splashScreen'),
             authScreen: document.getElementById('authScreen'),
             mainApp: document.getElementById('mainApp'),
@@ -276,6 +405,14 @@
             modalContent: document.getElementById('modalContent')
         };
 
+        // ================== INTRO ANIMATION ==================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                DOM.introSplash.classList.add('hide');
+            }, 3800);
+        });
+
+        // ================== TOAST ==================
         window.showToast = (msg, type = 'success') => {
             DOM.toast.textContent = msg;
             DOM.toast.className = `toast show px-6 py-3 rounded-full text-white font-semibold shadow-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
@@ -297,7 +434,6 @@
             DOM.modalOverlay.classList.remove('hidden');
             setTimeout(() => DOM.modalContent.classList.remove('scale-95'), 10);
         };
-
         window.closeModal = () => {
             DOM.modalContent.classList.add('scale-95');
             setTimeout(() => {
@@ -306,7 +442,6 @@
             }, 300);
         };
 
-        // Helper to convert Image to Base64
         window.fileToBase64 = (file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -316,6 +451,7 @@
             });
         };
 
+        // ================== AUTH ==================
         DOM.loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -323,7 +459,6 @@
             const btn = e.target.querySelector('button');
             const originalText = btn.innerText;
             btn.innerHTML = '<div class="loader mx-auto border-white border-t-transparent"></div>';
-            
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
             } catch (error) {
@@ -338,17 +473,15 @@
             const phone = document.getElementById('signupPhone').value;
             const email = document.getElementById('signupEmail').value;
             const pass = document.getElementById('signupPassword').value;
-            
             if(!/^07[0-9]{9}$/.test(phone)) return showToast('رقم الهاتف غير صحيح', 'error');
             if(name.trim().split(/\s+/).length < 3) return showToast('يرجى كتابة الاسم الثلاثي', 'error');
-
             const btn = e.target.querySelector('button');
             btn.innerHTML = '<div class="loader mx-auto border-white border-t-transparent"></div>';
-
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, 'artifacts', APP_ID, 'users', userCredential.user.uid, 'profile', 'data'), {
-                    name, phone, grade: '', gender: Math.random() > 0.5 ? 'boy' : 'girl'
+                    name, phone, grade: '', gender: Math.random() > 0.5 ? 'boy' : 'girl',
+                    isTeacher: false, teacherId: null
                 });
             } catch (error) {
                 showToast('خطأ: ' + error.message, 'error');
@@ -359,7 +492,6 @@
         async function fetchInitialData() {
             if (!currentUser) return;
             DOM.contentArea.innerHTML = '<div class="flex h-full items-center justify-center"><div class="loader border-indigo-600 border-t-transparent w-10 h-10"></div></div>';
-            
             try {
                 const profileDoc = await getDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'profile', 'data'));
                 if (profileDoc.exists()) {
@@ -367,24 +499,21 @@
                 } else {
                     userData = { name: 'طالب', grade: '', gender: 'boy' };
                 }
-
                 const subsSnapshot = await getDocs(collection(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'subscriptions'));
                 dbData.mySubscriptions = subsSnapshot.docs.map(d => d.id);
 
-                const colls = ['subjects', 'teachers', 'chapters', 'lectures'];
+                const colls = ['subjects', 'teachers', 'chapters', 'lectures', 'exams'];
                 for(let col of colls) {
-                    const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', col));
-                    dbData[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    try {
+                        const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', col));
+                        dbData[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    } catch(e) { dbData[col] = []; }
                 }
-                
-                // Sort lectures chronologically based on timestamp
                 dbData.lectures.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-                // إذا كان الطالب محدد مرحلته مسبقاً، ننتقل للمواد مباشرة
                 if (userData.grade && currentTab === 'lectures' && navStack.length === 0) {
                     navStack.push({ type: 'grade', name: userData.grade });
                 }
-
                 renderCurrentTab();
             } catch(e) {
                 console.error(e);
@@ -397,13 +526,10 @@
                 currentUser = user;
                 DOM.authScreen.classList.add('hidden');
                 DOM.mainApp.classList.remove('hidden');
-                setTimeout(() => DOM.splashScreen.style.opacity = '0', 1000);
-                setTimeout(() => DOM.splashScreen.classList.add('hidden'), 1500);
+                DOM.splashScreen.classList.add('hidden');
                 fetchInitialData();
             } else {
                 currentUser = null; userData = null;
-                setTimeout(() => DOM.splashScreen.style.opacity = '0', 1500);
-                setTimeout(() => DOM.splashScreen.classList.add('hidden'), 2000);
                 DOM.mainApp.classList.add('hidden');
                 DOM.authScreen.classList.remove('hidden');
             }
@@ -413,7 +539,6 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
             currentTab = tabName;
-            
             if(tabName === 'lectures' && userData && userData.grade) {
                 navStack = [{ type: 'grade', name: userData.grade }];
             } else {
@@ -424,9 +549,8 @@
 
         window.goBack = () => {
             if(navStack.length > 0) {
-                // منع الرجوع للمرحلة إذا كانت محفوظة
                 if(navStack.length === 1 && userData && userData.grade) {
-                    return; // لا ترجع، أنت في الصفحة الرئيسية للمواد
+                    return;
                 }
                 navStack.pop();
                 renderLecturesFlow();
@@ -436,7 +560,6 @@
         function updateHeader(title, sub, showBack = false) {
             DOM.headerTitle.textContent = title;
             DOM.headerSub.textContent = sub;
-            // إخفاء زر الرجوع إذا كنا في أول صفحة بعد تحديد المرحلة
             if(navStack.length === 1 && userData && userData.grade) showBack = false;
             DOM.backBtn.style.display = showBack ? 'flex' : 'none';
         }
@@ -444,16 +567,15 @@
         function renderCurrentTab() {
             DOM.contentArea.innerHTML = '';
             DOM.backBtn.style.display = 'none';
-
             if (currentTab === 'lectures') renderLecturesFlow();
             else if (currentTab === 'ai') renderAI();
             else if (currentTab === 'profile') renderProfile();
         }
 
+        // ================== LECTURES FLOW ==================
         function renderLecturesFlow() {
             const level = navStack.length;
             DOM.contentArea.innerHTML = '';
-            
             if (level === 0) {
                 updateHeader('المراحل الدراسية', 'اختر مرحلتك', false);
                 const grades = ['السادس العلمي', 'الثالث متوسط'];
@@ -475,10 +597,8 @@
             } else if (level === 1) {
                 const currentGrade = navStack[0].name;
                 updateHeader('المواد الدراسية', currentGrade, false);
-                
                 const subjects = dbData.subjects.filter(s => s.grade === currentGrade);
                 if(subjects.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-folder-open text-4xl mb-4"></i><p>لا توجد مواد مضافة</p></div>';
-
                 DOM.contentArea.innerHTML = `
                     <div class="grid grid-cols-2 gap-4 mt-2">
                         ${subjects.map(sub => `
@@ -494,14 +614,16 @@
                 const currentGrade = navStack[0].name;
                 const currentSubject = navStack[1];
                 updateHeader('المدرسين', currentSubject.name, true);
-
                 const teachers = dbData.teachers.filter(t => t.grade === currentGrade && t.subject === currentSubject.id);
                 if(teachers.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-users text-4xl mb-4"></i><p>لا يوجد مدرسين</p></div>';
 
+                // نجمع عدد المشتركين لكل أستاذ
                 DOM.contentArea.innerHTML = `
                     <div class="space-y-3 mt-2">
-                        ${teachers.map(teacher => `
-                            <div onclick="pushNav({type: 'teacher', id: '${teacher.id}', name: '${teacher.name}'})" class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-95 transition cursor-pointer">
+                        ${teachers.map(teacher => {
+                            const subscribersCount = teacher.subscribersCount || 0;
+                            return `
+                            <div onclick="pushNav({type: 'teacher', id: '${teacher.id}', name: '${teacher.name}'})" class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4 active:scale-95 transition cursor-pointer relative">
                                 <div class="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center overflow-hidden shadow-md">
                                     ${teacher.image ? `<img src="${teacher.image}" class="w-full h-full object-cover">` : `<i class="fas fa-chalkboard-teacher text-white text-2xl"></i>`}
                                 </div>
@@ -509,19 +631,33 @@
                                     <h3 class="font-bold text-gray-800 text-lg">${teacher.name}</h3>
                                     <p class="text-xs text-indigo-500 mt-1 font-semibold">استعراض الفصول</p>
                                 </div>
-                                <i class="fas fa-chevron-left text-gray-300"></i>
-                            </div>
-                        `).join('')}
+                                <div class="flex flex-col items-end gap-1">
+                                    <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-1 rounded-lg">
+                                        <i class="fas fa-user-graduate"></i> ${subscribersCount} طالب
+                                    </span>
+                                    <i class="fas fa-chevron-left text-gray-300"></i>
+                                </div>
+                            </div>`;
+                        }).join('')}
                     </div>
                 `;
             } else if (level === 3) {
                 const currentTeacher = navStack[2];
                 updateHeader('الفصول', currentTeacher.name, true);
-
                 const chapters = dbData.chapters.filter(c => c.teacher === currentTeacher.id);
                 if(chapters.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-layer-group text-4xl mb-4"></i><p>لا توجد فصول</p></div>';
 
+                // عدد الطلاب المشتركين
+                const subscribersCount = currentTeacher.subscribersCount || 0;
+
                 DOM.contentArea.innerHTML = `
+                    <div class="mb-3 bg-gradient-to-l from-emerald-500 to-green-600 rounded-2xl p-3 flex items-center justify-between text-white shadow-md">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-user-graduate text-xl"></i>
+                            <span class="font-bold text-sm">عدد الطلاب المشتركين</span>
+                        </div>
+                        <span class="font-black text-2xl">${subscribersCount}</span>
+                    </div>
                     <div class="space-y-3 mt-2">
                         ${chapters.map((chap, idx) => `
                             <div onclick="pushNav({type: 'chapter', id: '${chap.id}', name: '${chap.name}'})" class="bg-white p-5 rounded-3xl shadow-sm border-r-4 border-indigo-500 flex items-center justify-between active:scale-95 transition cursor-pointer">
@@ -537,13 +673,10 @@
                     </div>
                 `;
             } else if (level === 4) {
-                // قائمة المحاضرات بشكل نظيف بناءً على طلب المستخدم
                 const currentChapter = navStack[3];
                 updateHeader('المحاضرات', currentChapter.name, true);
-
                 const lectures = dbData.lectures.filter(l => l.chapter === currentChapter.id);
                 if(lectures.length === 0) return DOM.contentArea.innerHTML = '<div class="text-center mt-20 text-gray-400"><i class="fas fa-video-slash text-4xl mb-4"></i><p>لا توجد محاضرات</p></div>';
-
                 DOM.contentArea.innerHTML = `
                     <div class="space-y-3 mt-2">
                         ${lectures.map((lec, idx) => `
@@ -579,25 +712,56 @@
             renderLecturesFlow();
         };
 
+        // ================== LECTURE DETAILS + CUSTOM PLAYER ==================
         window.openLectureDetails = (lectureId) => {
             const lecture = dbData.lectures.find(l => l.id === lectureId);
             const teacherId = lecture.teacher;
-            const isSubscribed = dbData.mySubscriptions.includes(teacherId) || currentUser.email === ADMIN_EMAIL;
+            // هل الطالب مشترك؟ (اشتراك أو أستاذ صاحب الحساب أو أدمن)
+            const isTeacherOwner = userData.isTeacher && userData.teacherId === teacherId;
+            const isSubscribed = dbData.mySubscriptions.includes(teacherId) || currentUser.email === ADMIN_EMAIL || isTeacherOwner;
             const streamUrl = `https://questions-irfj.onrender.com/video?link=${encodeURIComponent(lecture.link)}`;
-            
+
+            // جلب النماذج الخاصة بالمحاضرة
+            const lectureExams = dbData.exams.filter(e => e.lecture === lectureId) || [];
+
             const html = `
-                <div id="lectureDetailsScreen" class="absolute inset-0 z-50 bg-gray-50 flex flex-col">
-                    <!-- Top Area: Player or Lock -->
-                    <div class="relative w-full bg-black flex-shrink-0" style="aspect-ratio: 16/9;">
-                        ${isSubscribed ? `
-                            <video id="vidPlayer_${lecture.id}" controls controlsList="nodownload nofullscreen noremoteplayback" disablePictureInPicture playsinline class="w-full h-full object-contain">
+                <div id="lectureDetailsScreen" class="absolute inset-0 z-50 bg-gray-50 flex flex-col overflow-y-auto">
+                    ${isSubscribed ? `
+                        <div class="videoWrapper" id="videoWrapper_${lecture.id}">
+                            <video id="vidPlayer_${lecture.id}" playsinline preload="metadata" x-webkit-airplay="deny" controlsList="nodownload noplaybackrate" disablePictureInPicture>
                                 <source src="${streamUrl}" type="video/mp4">
                             </video>
-                            <button onclick="closeLectureDetails()" class="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white backdrop-blur-md transition z-10">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        ` : `
-                            <div class="w-full h-full flex flex-col items-center justify-center bg-gray-900 text-white p-4 text-center">
+                            <div class="customOverlay">
+                                <div class="topBar">
+                                    <button onclick="closeLectureDetails()" class="ctrlBtn"><i class="fas fa-times"></i></button>
+                                </div>
+                                <div class="playPauseFloat" onclick="togglePlay_${lecture.id}()">
+                                    <i id="playIcon_${lecture.id}" class="fas fa-play"></i>
+                                </div>
+                                <div class="bottomBar">
+                                    <div class="progressRow">
+                                        <span class="timeLabel" id="curTime_${lecture.id}">0:00</span>
+                                        <div class="progressBar" id="progressBar_${lecture.id}">
+                                            <div class="progressFill" id="progressFill_${lecture.id}"></div>
+                                        </div>
+                                        <span class="timeLabel" id="durTime_${lecture.id}">0:00</span>
+                                    </div>
+                                    <div class="controlsRow">
+                                        <div class="flex items-center gap-2">
+                                            <button class="ctrlBtn" onclick="skipVideo_${lecture.id}(-10)"><i class="fas fa-backward"></i></button>
+                                            <button class="ctrlBtn" onclick="skipVideo_${lecture.id}(10)"><i class="fas fa-forward"></i></button>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button class="ctrlBtn" onclick="toggleMute_${lecture.id}()"><i id="volIcon_${lecture.id}" class="fas fa-volume-up"></i></button>
+                                            <button class="ctrlBtn" onclick="toggleFullscreen_${lecture.id}()"><i id="fsIcon_${lecture.id}" class="fas fa-expand"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="videoWrapper" style="background:#111;">
+                            <div class="w-full h-full flex flex-col items-center justify-center text-white p-4 text-center">
                                 <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center text-3xl mb-3">
                                     <i class="fas fa-lock"></i>
                                 </div>
@@ -605,55 +769,395 @@
                                 <button onclick="showCodeGate('${teacherId}', '${lecture.id}')" class="bg-indigo-600 px-6 py-2 rounded-full font-bold active:scale-95 transition">
                                     <i class="fas fa-key ml-2"></i> أدخل الكود للمشاهدة
                                 </button>
-                                <button onclick="closeLectureDetails()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-md">
+                                <button onclick="closeLectureDetails()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
-                        `}
-                    </div>
-                    
-                    <!-- Bottom Area: Details -->
-                    <div class="flex-1 overflow-y-auto p-5 bg-white rounded-t-3xl -mt-4 relative z-10 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)]">
+                        </div>
+                    `}
+                    <div class="p-5 bg-white rounded-t-3xl -mt-4 relative z-10 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] flex-1">
                         <h2 class="text-2xl font-black text-gray-800 mb-2">${lecture.name}</h2>
                         <div class="flex gap-2 mb-6">
                             <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold border border-indigo-100">محاضرة مسجلة</span>
                         </div>
                         <h3 class="font-bold text-gray-700 border-b pb-2 mb-3">تفاصيل المحاضرة</h3>
-                        <p class="text-gray-600 leading-relaxed text-sm whitespace-pre-line">${lecture.details || 'لا توجد تفاصيل إضافية لهذه المحاضرة.'}</p>
+                        <p class="text-gray-600 leading-relaxed text-sm whitespace-pre-line mb-8">${lecture.details || 'لا توجد تفاصيل إضافية لهذه المحاضرة.'}</p>
+
+                        <!-- 4 أزرار الاختبارات -->
+                        <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-file-alt text-indigo-600"></i> نماذج الامتحانات الشاملة
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            ${[1,2,3,4].map(n => {
+                                const exam = lectureExams.find(e => e.number === n);
+                                const savedResult = getSavedExamResult(lecture.id, n);
+                                return `
+                                    <button onclick="openExam(${n}, '${lecture.id}', '${teacherId}')" 
+                                        class="relative bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-4 rounded-2xl shadow-md active:scale-95 transition text-right">
+                                        <div class="absolute top-2 left-2 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-xs font-black">${n}</div>
+                                        <i class="fas fa-clipboard-list text-2xl mb-2"></i>
+                                        <div class="font-bold text-sm">النموذج ${n}</div>
+                                        ${savedResult !== null ? `
+                                            <div class="mt-2 text-[11px] bg-white/25 rounded-lg px-2 py-1 inline-block">
+                                                <i class="fas fa-check-circle"></i> الدرجة: ${savedResult}/100
+                                            </div>
+                                        ` : `
+                                            <div class="mt-2 text-[11px] bg-white/15 rounded-lg px-2 py-1 inline-block">
+                                                ${exam ? 'اضغط للحل' : 'غير متوفر'}
+                                            </div>
+                                        `}
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
                 </div>
             `;
-            
             const container = document.createElement('div');
             container.innerHTML = html;
             document.body.appendChild(container.firstElementChild);
 
-            // Handle Video Resume
             if(isSubscribed) {
-                const vid = document.getElementById(`vidPlayer_${lecture.id}`);
-                vid.addEventListener('contextmenu', e => e.preventDefault());
-                
-                const savedTime = localStorage.getItem(`vid_${lecture.id}`);
-                if(savedTime) {
-                    vid.addEventListener('loadedmetadata', () => {
-                        vid.currentTime = parseFloat(savedTime);
-                    });
-                }
-                vid.addEventListener('timeupdate', () => {
-                    localStorage.setItem(`vid_${lecture.id}`, vid.currentTime);
-                });
+                setupVideoPlayer(lecture.id);
             }
         };
+
+        function getSavedExamResult(lectureId, examNum) {
+            try {
+                const key = `exam_result_${currentUser.uid}_${lectureId}_${examNum}`;
+                const v = localStorage.getItem(key);
+                return v !== null ? parseInt(v) : null;
+            } catch(e) { return null; }
+        }
+        function saveExamResult(lectureId, examNum, score) {
+            try {
+                const key = `exam_result_${currentUser.uid}_${lectureId}_${examNum}`;
+                localStorage.setItem(key, String(score));
+            } catch(e) {}
+        }
+
+        // ربط أحداث المشغل
+        function setupVideoPlayer(lectureId) {
+            const video = document.getElementById(`vidPlayer_${lectureId}`);
+            if(!video) return;
+            const wrapper = document.getElementById(`videoWrapper_${lectureId}`);
+            const progressBar = document.getElementById(`progressBar_${lectureId}`);
+            const progressFill = document.getElementById(`progressFill_${lectureId}`);
+            const curTime = document.getElementById(`curTime_${lectureId}`);
+            const durTime = document.getElementById(`durTime_${lectureId}`);
+            const playIcon = document.getElementById(`playIcon_${lectureId}`);
+
+            // استئناف من آخر وقت
+            const savedTime = localStorage.getItem(`vid_${lectureId}`);
+            if(savedTime) {
+                video.addEventListener('loadedmetadata', () => {
+                    video.currentTime = parseFloat(savedTime);
+                }, { once: true });
+            }
+
+            video.addEventListener('loadedmetadata', () => {
+                durTime.textContent = formatTime(video.duration);
+            });
+            video.addEventListener('timeupdate', () => {
+                const pct = (video.currentTime / video.duration) * 100;
+                progressFill.style.width = pct + '%';
+                curTime.textContent = formatTime(video.currentTime);
+                localStorage.setItem(`vid_${lectureId}`, video.currentTime);
+            });
+            video.addEventListener('play', () => { playIcon.className = 'fas fa-pause'; });
+            video.addEventListener('pause', () => { playIcon.className = 'fas fa-play'; });
+            video.addEventListener('ended', () => { playIcon.className = 'fas fa-play'; });
+
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const pct = (e.clientX - rect.left) / rect.width;
+                video.currentTime = pct * video.duration;
+            });
+
+            // منع القائمة اليمنى
+            video.addEventListener('contextmenu', e => e.preventDefault());
+            wrapper.addEventListener('contextmenu', e => e.preventDefault());
+
+            // دوال عامة للزر
+            window[`togglePlay_${lectureId}`] = () => {
+                if(video.paused) video.play(); else video.pause();
+            };
+            window[`skipVideo_${lectureId}`] = (sec) => {
+                video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + sec));
+            };
+            window[`toggleMute_${lectureId}`] = () => {
+                video.muted = !video.muted;
+                document.getElementById(`volIcon_${lectureId}`).className = video.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            };
+            window[`toggleFullscreen_${lectureId}`] = () => {
+                if(wrapper.classList.contains('fullscreen-mode')) {
+                    wrapper.classList.remove('fullscreen-mode');
+                    document.getElementById(`fsIcon_${lectureId}`).className = 'fas fa-expand';
+                    if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+                } else {
+                    wrapper.classList.add('fullscreen-mode');
+                    document.getElementById(`fsIcon_${lectureId}`).className = 'fas fa-compress';
+                    // حاول قفل الاتجاه للوضع الأفقي
+                    try {
+                        if (screen.orientation && screen.orientation.lock) {
+                            screen.orientation.lock('landscape').catch(()=>{});
+                        }
+                    } catch(e) {}
+                }
+            };
+        }
+
+        function formatTime(s) {
+            if(isNaN(s)) return '0:00';
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+        }
 
         window.closeLectureDetails = () => {
             const el = document.getElementById('lectureDetailsScreen');
             if(el) {
                 const vid = el.querySelector('video');
-                if(vid) vid.pause();
+                if(vid) { vid.pause(); }
                 el.remove();
             }
         };
 
+        // ================== EXAM MODAL ==================
+        window.openExam = (examNum, lectureId, teacherId) => {
+            // تحقق من الاشتراك
+            const isTeacherOwner = userData.isTeacher && userData.teacherId === teacherId;
+            const isSubscribed = dbData.mySubscriptions.includes(teacherId) || currentUser.email === ADMIN_EMAIL || isTeacherOwner;
+            if(!isSubscribed) {
+                showToast('يجب الاشتراك أولاً', 'error');
+                return;
+            }
+
+            const exam = dbData.exams.find(e => e.lecture === lectureId && e.number === examNum);
+            if(!exam || !exam.imageUrl) {
+                showToast('هذا النموذج غير متوفر حالياً', 'error');
+                return;
+            }
+
+            const savedScore = getSavedExamResult(lectureId, examNum);
+            const html = `
+                <div class="text-center">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl font-black text-gray-800">النموذج ${examNum}</h3>
+                        <button onclick="closeModal()" class="w-8 h-8 bg-gray-100 rounded-full text-gray-600 flex items-center justify-center"><i class="fas fa-times"></i></button>
+                    </div>
+                    ${savedScore !== null ? `
+                        <div class="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-4">
+                            <i class="fas fa-check-circle text-green-600 text-3xl mb-2"></i>
+                            <p class="font-bold text-green-800">لقد قمت بحل هذا النموذج</p>
+                            <p class="text-3xl font-black text-green-700 mt-1">${savedScore}/100</p>
+                        </div>
+                    ` : ''}
+                    <img src="${exam.imageUrl}" class="examImg mb-4" alt="نموذج ${examNum}">
+                    ${savedScore === null ? `
+                        <div class="rulesBox text-right mb-4">
+                            <h4 class="font-bold text-red-700 mb-2 text-sm"><i class="fas fa-exclamation-triangle"></i> شروط الحل:</h4>
+                            <div class="text-xs text-red-900 space-y-1.5">
+                                <div><span class="dot"></span> يجب حل كل سؤال في صفحة واحدة</div>
+                                <div><span class="dot"></span> يجب أن يكون السؤال واضحاً مع جوابه</div>
+                                <div><span class="dot"></span> يجب أن يكون مجموع الحل أقل من 7 صفحات</div>
+                                <div><span class="dot"></span> إذا كان عدد الأسئلة 7، يجب ترك سؤال واحد (يُحسب 6 أسئلة)</div>
+                                <div><span class="dot"></span> الدرجة النهائية من 100 (توزع بالتساوي على الأسئلة)</div>
+                            </div>
+                        </div>
+                        <div class="uploadBox" onclick="document.getElementById('examUpload_${examNum}').click()">
+                            <i class="fas fa-plus-circle text-3xl text-indigo-500 mb-2"></i>
+                            <p class="font-bold text-gray-700 text-sm">إرفاق صور الحل</p>
+                            <p class="text-xs text-gray-400 mt-1">حتى 7 صور</p>
+                        </div>
+                        <input type="file" id="examUpload_${examNum}" accept="image/*" multiple class="hidden" onchange="handleExamUpload(this, ${examNum})">
+                        <div id="previewBox_${examNum}" class="grid grid-cols-4 gap-2 mt-3"></div>
+                        <button id="submitExam_${examNum}" onclick="submitExamSolution(${examNum}, '${lectureId}', '${teacherId}')" 
+                            class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg active:scale-95 transition mt-4 hidden">
+                            <i class="fas fa-paper-plane ml-2"></i> إرسال الحل
+                        </button>
+                        <div id="loadingExam_${examNum}" class="hidden mt-4">
+                            <div class="loader mx-auto border-indigo-600 border-t-transparent"></div>
+                            <p class="text-xs text-gray-500 mt-2">جاري التصحيح بالذكاء الاصطناعي...</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            showModal(html);
+            window._examUploads = window._examUploads || {};
+            window._examUploads[examNum] = [];
+        };
+
+        window.handleExamUpload = async (input, examNum) => {
+            const files = Array.from(input.files || []);
+            if(files.length === 0) return;
+            let current = window._examUploads[examNum] || [];
+            const remaining = 7 - current.length;
+            const toAdd = files.slice(0, remaining);
+            for(const f of toAdd) {
+                const b64 = await fileToBase64(f);
+                current.push(b64);
+            }
+            window._examUploads[examNum] = current;
+            renderExamPreviews(examNum);
+        };
+
+        function renderExamPreviews(examNum) {
+            const arr = window._examUploads[examNum] || [];
+            const box = document.getElementById(`previewBox_${examNum}`);
+            const btn = document.getElementById(`submitExam_${examNum}`);
+            if(!box) return;
+            box.innerHTML = arr.map((src, i) => `
+                <div class="relative">
+                    <img src="${src}" class="previewThumb">
+                    <button onclick="removeExamImage(${examNum}, ${i})" class="absolute -top-1 -left-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+            if(btn) btn.classList.toggle('hidden', arr.length === 0);
+        }
+
+        window.removeExamImage = (examNum, idx) => {
+            const arr = window._examUploads[examNum] || [];
+            arr.splice(idx, 1);
+            window._examUploads[examNum] = arr;
+            renderExamPreviews(examNum);
+        };
+
+        // ============= GEMINI CALL WITH FALLBACK =============
+        async function callGeminiWithFallback(parts, systemInstruction = null) {
+            let lastError = null;
+            for(const model of GEMINI_MODELS) {
+                try {
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+                    const body = {
+                        contents: [{ parts }],
+                        generationConfig: { temperature: 0.2, maxOutputTokens: 4096 }
+                    };
+                    if(systemInstruction) {
+                        body.systemInstruction = { parts: [{ text: systemInstruction }] };
+                    }
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    });
+                    const result = await response.json();
+                    if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                        return { text: result.candidates[0].content.parts[0].text, model };
+                    }
+                    if (result.error) {
+                        lastError = result.error.message;
+                        console.warn(`Model ${model} failed:`, result.error.message);
+                        continue;
+                    }
+                    lastError = 'Empty response';
+                } catch(e) {
+                    lastError = e.message;
+                    console.warn(`Model ${model} error:`, e.message);
+                }
+            }
+            throw new Error(lastError || 'جميع النماذج فشلت');
+        }
+
+        // ============= SUBMIT EXAM =============
+        window.submitExamSolution = async (examNum, lectureId, teacherId) => {
+            const images = window._examUploads[examNum] || [];
+            if(images.length === 0) return showToast('أرفق صور الحل أولاً', 'error');
+            if(getSavedExamResult(lectureId, examNum) !== null) {
+                showToast('لقد قمت بحل هذا النموذج مسبقاً', 'error');
+                return;
+            }
+
+            const btn = document.getElementById(`submitExam_${examNum}`);
+            const loading = document.getElementById(`loadingExam_${examNum}`);
+            if(btn) btn.classList.add('hidden');
+            if(loading) loading.classList.remove('hidden');
+
+            const exam = dbData.exams.find(e => e.lecture === lectureId && e.number === examNum);
+            if(!exam || !exam.imageUrl) {
+                showToast('لا يوجد نموذج أسئلة', 'error');
+                return;
+            }
+
+            try {
+                // نبني parts: صورة الأسئلة + صور الحل
+                const parts = [
+                    { text: `أنت مصحح امتحانات عراقي خبير. سأعطيك صورة نموذج الأسئلة، ثم صور حل الطالب.
+قواعد التصحيح:
+1. يجب حل كل سؤال في صفحة واحدة، إذا لم يكن كذلك خصم قليل.
+2. يجب أن يكون السؤال واضحاً مع جوابه في الحل.
+3. إذا كان مجموع صفحات الحل 7 صفحات أو أكثر، هذا خطأ يجب ذكره.
+4. إذا كان عدد الأسئلة في النموذج 7، يجب أن يترك الطالب سؤالاً واحداً فيعتبر عدد الأسئلة 6.
+5. الدرجة النهائية من 100، تُوزع بالتساوي على عدد الأسئلة (مثلاً 5 أسئلة = كل سؤال 20 درجة).
+6. إذا كان عدد الأسئلة فردياً وغير قابل للقسمة، وزع بالتساوي قدر الإمكان.
+
+المطلوب منك بالضبط:
+- استخرج عدد الأسئلة من صورة النموذج.
+- صحح كل إجابة في صور الحل.
+- أعطني النتيجة النهائية من 100.
+- اذكر الأخطاء لكل سؤال.
+- ابدأ الرد بكلمة "SCORE:" ثم الرقم فقط، ثم بقية التفاصيل.
+
+مثال صيغة الرد:
+SCORE: 85
+عدد الأسئلة: 4
+...
+التفاصيل:
+سؤال 1: صحيح/خطأ كذا...
+` },
+                    { text: "هذه صورة نموذج الأسئلة:" },
+                    { inline_data: { mime_type: "image/jpeg", data: exam.imageUrl.split(',')[1] } }
+                ];
+                for(let i = 0; i < images.length; i++) {
+                    parts.push({ text: `صورة الحل ${i+1}:` });
+                    parts.push({ inline_data: { mime_type: "image/jpeg", data: images[i].split(',')[1] } });
+                }
+
+                const result = await callGeminiWithFallback(parts);
+                const text = result.text;
+
+                // استخرج الدرجة
+                let score = 0;
+                const scoreMatch = text.match(/SCORE\s*:\s*(\d+)/i);
+                if(scoreMatch) score = parseInt(scoreMatch[1]);
+                if(score > 100) score = 100;
+                if(isNaN(score)) score = 0;
+
+                saveExamResult(lectureId, examNum, score);
+                window._examUploads[examNum] = [];
+
+                // عرض النتيجة
+                const formattedText = text.replace(/SCORE\s*:\s*\d+/i, '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                showModal(`
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-3">
+                            <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-1">تم التصحيح!</h3>
+                        <p class="text-gray-500 text-xs mb-4">بواسطة ${result.model}</p>
+                        <div class="text-5xl font-black text-indigo-600 mb-4">${score}<span class="text-lg text-gray-400">/100</span></div>
+                        <div class="text-right bg-gray-50 rounded-xl p-4 max-h-64 overflow-y-auto text-sm leading-relaxed">
+                            ${formattedText}
+                        </div>
+                        <button onclick="closeModal()" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 mt-4 active:scale-95 transition">حسناً</button>
+                    </div>
+                `);
+                // تحديث زر النموذج
+                setTimeout(() => {
+                    closeLectureDetails();
+                    openLectureDetails(lectureId);
+                }, 100);
+            } catch(e) {
+                console.error(e);
+                showToast('فشل التصحيح: ' + e.message, 'error');
+                if(btn) btn.classList.remove('hidden');
+                if(loading) loading.classList.add('hidden');
+            }
+        };
+
+        // ================== CODE GATE ==================
         window.showCodeGate = (teacherId, lectureId) => {
             const html = `
                 <div class="text-center">
@@ -662,7 +1166,7 @@
                     </div>
                     <h3 class="text-xl font-bold mb-2">تفعيل الاشتراك</h3>
                     <p class="text-gray-500 text-sm mb-6">أدخل الكود الخاص بالأستاذ لفتح جميع محاضراته</p>
-                    <input type="text" id="codeVerifyInput" placeholder="DARB-XXXXXX" class="w-full border-2 border-gray-200 rounded-xl p-3 text-center text-lg font-bold tracking-widest uppercase focus:border-indigo-500 focus:outline-none mb-4">
+                    <input type="text" id="codeVerifyInput" placeholder="TAMOUH-XXXXXX" class="w-full border-2 border-gray-200 rounded-xl p-3 text-center text-lg font-bold tracking-widest uppercase focus:border-indigo-500 focus:outline-none mb-4">
                     <button onclick="verifyCode('${teacherId}', '${lectureId}')" class="w-full bg-indigo-600 text-white font-bold rounded-xl py-3 shadow-lg active:scale-95 transition mb-3">تفعيل الكود</button>
                     <button onclick="closeModal()" class="w-full bg-gray-100 text-gray-600 font-bold rounded-xl py-3 active:scale-95 transition">إلغاء</button>
                 </div>
@@ -673,50 +1177,88 @@
         window.verifyCode = async (teacherId, lectureId) => {
             const input = document.getElementById('codeVerifyInput').value.trim().toUpperCase();
             if(!input) return showToast("أدخل الكود", "error");
-
             try {
                 const codeDocRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'codes', input);
                 const codeDoc = await getDoc(codeDocRef);
-
                 if(!codeDoc.exists()) return showToast("الكود غير صحيح", "error");
                 const codeData = codeDoc.data();
-
                 if(codeData.used) return showToast("هذا الكود مستخدم مسبقاً", "error");
                 if(codeData.teacher !== teacherId) return showToast("الكود لا يطابق هذا الأستاذ", "error");
 
-                await updateDoc(codeDocRef, {
-                    used: true, usedBy: currentUser.uid, usedAt: new Date().toISOString()
-                });
-
-                await setDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'subscriptions', teacherId), { active: true });
-                
+                // إضافة الاشتراك أولاً
+                await setDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'subscriptions', teacherId), { active: true, at: new Date().toISOString() });
+                // ثم تحديث الكود
+                await updateDoc(codeDocRef, { used: true, usedBy: currentUser.uid, usedAt: new Date().toISOString() });
+                // زيادة عدد المشتركين عند الأستاذ
+                const tRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'teachers', teacherId);
+                const tSnap = await getDoc(tRef);
+                if(tSnap.exists()) {
+                    const currentCount = tSnap.data().subscribersCount || 0;
+                    await updateDoc(tRef, { subscribersCount: currentCount + 1 });
+                }
                 dbData.mySubscriptions.push(teacherId);
                 showToast("تم التفعيل بنجاح!");
                 closeModal();
-                
-                // Refresh Lecture Details
                 closeLectureDetails();
+                await fetchInitialData();
                 openLectureDetails(lectureId);
-
             } catch(e) {
                 console.error(e);
                 showToast("خطأ في التحقق", "error");
             }
         };
 
+        // ================== AI ASSISTANT ==================
         function renderAI() {
-            updateHeader('المساعد الذكي', 'اسألني في المنهج', false);
+            updateHeader('المساعد الذكي', 'اسألني في منهجك', false);
+            // التحقق من الاشتراك
+            const hasSub = dbData.mySubscriptions.length > 0;
+            if(!hasSub) {
+                DOM.contentArea.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center px-6">
+                        <div class="w-24 h-24 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-4xl mb-4">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">المساعد الذكي مقفل</h3>
+                        <p class="text-gray-500 text-sm mb-6">يجب الاشتراك في مادة واحدة على الأقل لاستخدام المساعد الذكي.</p>
+                        <button onclick="switchTab('lectures', document.querySelectorAll('.nav-item')[0])" class="bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl active:scale-95 transition">
+                            تصفح المواد
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // بناء سياق المواد المشترك بها
+            const subContexts = [];
+            for(const tid of dbData.mySubscriptions) {
+                const t = dbData.teachers.find(x => x.id === tid);
+                if(!t) continue;
+                const subj = dbData.subjects.find(s => s.id === t.subject);
+                subContexts.push({
+                    teacherName: t.name,
+                    subjectName: subj?.name || '',
+                    grade: t.grade,
+                    chapters: dbData.chapters.filter(c => c.teacher === tid).map(c => c.name)
+                });
+            }
+            window._aiContexts = subContexts;
+
             DOM.contentArea.innerHTML = `
                 <div class="flex flex-col h-full relative pb-16">
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 mb-2 text-xs text-indigo-800">
+                        <i class="fas fa-info-circle"></i> أنا مساعدك في:
+                        ${subContexts.map(c => `<span class="inline-block bg-white px-2 py-0.5 rounded-lg mx-1 font-bold">${c.subjectName} - ${c.grade}</span>`).join('')}
+                    </div>
                     <div id="chatBox" class="flex-1 overflow-y-auto space-y-4 px-2 py-4 pb-20">
                         <div class="flex gap-3">
                             <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600"><i class="fas fa-robot text-sm"></i></div>
                             <div class="chat-msg-bot p-3 max-w-[85%] text-sm leading-relaxed shadow-sm">
-                                أهلاً بك يا ${userData.name}! أنا مساعدك الذكي. جاهز أجاوبك على أي سؤال بخصوص منهج الثالث متوسط والسادس العلمي.
+                                أهلاً ${userData.name}! أنا مساعدك الذكي في منصة طموح. اسألني عن أي شي في المواد المشترك بها.
                             </div>
                         </div>
                     </div>
-                    <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-100 p-3 flex gap-2 rounded-b-2xl shadow-[0_-5px_10px_rgba(0,0,0,0.02)]">
+                    <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-100 p-3 flex gap-2 rounded-b-2xl">
                         <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." class="flex-1 bg-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                         <button onclick="sendChatMessage()" class="w-12 h-12 bg-indigo-600 rounded-xl text-white flex items-center justify-center shadow-md active:scale-95 transition">
                             <i class="fas fa-paper-plane"></i>
@@ -730,16 +1272,14 @@
             const inputEl = document.getElementById('chatInput');
             const msg = inputEl.value.trim();
             if(!msg) return;
-
             const chatBox = document.getElementById('chatBox');
             chatBox.innerHTML += `
                 <div class="flex gap-3 flex-row-reverse">
-                    <div class="chat-msg-user p-3 max-w-[85%] text-sm leading-relaxed shadow-sm">${msg}</div>
+                    <div class="chat-msg-user p-3 max-w-[85%] text-sm leading-relaxed shadow-sm">${escapeHtml(msg)}</div>
                 </div>
             `;
             inputEl.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
-
             const loadingId = 'loading-' + Date.now();
             chatBox.innerHTML += `
                 <div id="${loadingId}" class="flex gap-3">
@@ -753,28 +1293,23 @@
             `;
             chatBox.scrollTop = chatBox.scrollHeight;
 
+            const contexts = window._aiContexts || [];
+            const ctxText = contexts.map(c => `- مادة: ${c.subjectName} (${c.grade}) / أستاذ: ${c.teacherName}`).join('\n');
+            const systemPrompt = `أنت مساعد ذكي في منصة "طموح" التعليمية العراقية. 
+تخصصك فقط في المواد التالية التي يشترك بها الطالب:
+${ctxText}
+
+التزم بلهجة عراقية محترمة ومبسطة. 
+ممنوع تجاوب على أي سؤال خارج المواد المذكورة أعلاه. 
+إذا سألك الطالب عن شي خارج نطاق المواد، اعتذر بأدب وأخبره أن تخصصك فقط في المواد المشترك بها.`;
+
             try {
-                const systemPrompt = "أنت مدرس عراقي خبير. تخصصك فقط مناهج العراق للسادس العلمي والثالث متوسط. جاوب بلهجة عراقية محترمة ومبسطة. ممنوع الخروج عن المنهج.";
-                // Using stable model as requested
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-                
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: msg }] }],
-                        systemInstruction: { parts: [{ text: systemPrompt }] }
-                    })
-                });
-                
-                const result = await response.json();
-                document.getElementById(loadingId).remove();
-
-                let reply = "عذراً، حدث خطأ في النظام.";
-                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
-                    reply = result.candidates[0].content.parts[0].text;
-                }
-
+                const result = await callGeminiWithFallback(
+                    [{ text: msg }],
+                    systemPrompt
+                );
+                document.getElementById(loadingId)?.remove();
+                const reply = result.text;
                 const formattedReply = reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
                 chatBox.innerHTML += `
                     <div class="flex gap-3">
@@ -784,18 +1319,23 @@
                 `;
                 chatBox.scrollTop = chatBox.scrollHeight;
             } catch (error) {
-                document.getElementById(loadingId).remove();
-                chatBox.innerHTML += `<div class="flex gap-3"><div class="chat-msg-bot text-red-500 p-3 text-sm">حدث خطأ في الاتصال.</div></div>`;
+                document.getElementById(loadingId)?.remove();
+                chatBox.innerHTML += `<div class="flex gap-3"><div class="chat-msg-bot text-red-500 p-3 text-sm">حدث خطأ: ${error.message}</div></div>`;
             }
         };
 
+        function escapeHtml(s) {
+            return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        // ================== PROFILE ==================
         function renderProfile() {
             updateHeader('حسابي', 'الملف الشخصي', false);
             const isAdmin = currentUser.email === ADMIN_EMAIL;
-            const avatarUrl = userData.gender === 'girl' 
-                ? 'https://api.dicebear.com/7.x/notionists/svg?seed=Jasmine&backgroundColor=fbcfe8'
-                : 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=c7d2fe';
-
+            const isTeacher = userData.isTeacher;
+            const avatarUrl = userData.gender === 'girl'
+                ? 'https://api.dicebear.com/7.x/n/notionists/svg?seed=Jasmine&backgroundColor=fbcfe8'
+                : 'https://api.dicebear.com/7.x/n/notionists/svg?seed=Felix&backgroundColor=c7d2fe';
             DOM.contentArea.innerHTML = `
                 <div class="space-y-4 mt-4">
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center relative overflow-hidden">
@@ -804,8 +1344,8 @@
                         <h2 class="text-xl font-bold text-gray-800">${userData.name}</h2>
                         <p class="text-sm text-gray-500">${currentUser.email}</p>
                         <p class="text-xs font-bold text-indigo-600 mt-2 bg-indigo-50 inline-block px-4 py-1.5 rounded-full">${userData.grade || 'المرحلة غير محددة'}</p>
+                        ${isTeacher ? `<p class="text-xs font-bold text-emerald-600 mt-2 bg-emerald-50 inline-block px-4 py-1.5 rounded-full"><i class="fas fa-chalkboard-teacher"></i> حساب أستاذ</p>` : ''}
                     </div>
-
                     <div class="bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
                         <button onclick="showPricingModal()" class="w-full p-4 flex items-center justify-between active:scale-95 transition border-b border-gray-50">
                             <div class="flex items-center gap-4">
@@ -823,7 +1363,6 @@
                             <i class="fas fa-chevron-left text-gray-300 text-sm"></i>
                         </button>` : ''}
                     </div>
-
                     <button onclick="signOut(auth)" class="w-full bg-red-50 p-4 rounded-2xl border border-red-100 flex items-center justify-center gap-2 text-red-600 font-bold active:scale-95 transition mt-6">
                         <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                     </button>
@@ -832,7 +1371,7 @@
         }
 
         window.showPricingModal = () => {
-            const html = `
+            showModal(`
                 <div class="relative text-center">
                     <button onclick="closeModal()" class="absolute -top-2 -right-2 w-8 h-8 bg-gray-100 rounded-full text-gray-500 flex items-center justify-center active:scale-95"><i class="fas fa-times"></i></button>
                     <div class="w-16 h-16 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-3 shadow-inner"><i class="fas fa-gem"></i></div>
@@ -846,15 +1385,15 @@
                         <i class="fab fa-telegram-plane text-xl"></i> لشراء الأكواد تواصل معنا
                     </a>
                 </div>
-            `;
-            showModal(html);
+            `);
         };
 
+        // ================== ADMIN DASHBOARD ==================
         window.openAdminDashboard = () => {
             const master = document.getElementById('adminContainerMaster');
             master.innerHTML = `
                 <header class="bg-gray-900 text-white px-4 py-4 flex justify-between items-center shadow-lg">
-                    <h2 class="font-bold text-lg"><i class="fas fa-shield-alt ml-2 text-indigo-400"></i> لوحة التحكم</h2>
+                    <h2 class="font-bold text-lg"><i class="fas fa-shield-alt ml-2 text-indigo-400"></i> لوحة تحكم طموح</h2>
                     <button onclick="closeAdminDashboard()" class="w-8 h-8 bg-white/10 hover:bg-red-500 rounded-full flex items-center justify-center transition">
                         <i class="fas fa-times"></i>
                     </button>
@@ -863,23 +1402,31 @@
                     <div class="grid grid-cols-1 gap-4">
                         <button onclick="openAdminView('subjects')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-blue-500 flex items-center gap-4 active:scale-95 transition">
                             <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-book"></i></div>
-                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة المواد</h3><p class="text-xs text-gray-500">إضافة وتعديل وحذف</p></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة المواد</h3></div>
                         </button>
                         <button onclick="openAdminView('teachers')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-green-500 flex items-center gap-4 active:scale-95 transition">
                             <div class="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-chalkboard-teacher"></i></div>
-                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة الأساتذة</h3><p class="text-xs text-gray-500">إضافة مع صورة، وتعديل</p></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة الأساتذة</h3></div>
                         </button>
                         <button onclick="openAdminView('chapters')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-purple-500 flex items-center gap-4 active:scale-95 transition">
                             <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-layer-group"></i></div>
-                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة الفصول</h3><p class="text-xs text-gray-500">ربط بالأستاذ والمادة</p></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة الفصول</h3></div>
                         </button>
                         <button onclick="openAdminView('lectures')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-red-500 flex items-center gap-4 active:scale-95 transition">
                             <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-video"></i></div>
-                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة المحاضرات</h3><p class="text-xs text-gray-500">إضافة مع تفاصيل نصية</p></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة المحاضرات</h3></div>
+                        </button>
+                        <button onclick="openAdminView('exams')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-orange-500 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-file-alt"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">إدارة نماذج الاختبارات</h3><p class="text-xs text-gray-500">4 نماذج لكل محاضرة</p></div>
+                        </button>
+                        <button onclick="openAdminView('teacherAccess')" class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-teal-500 flex items-center gap-4 active:scale-95 transition">
+                            <div class="w-12 h-12 bg-teal-50 text-teal-500 rounded-full flex items-center justify-center text-xl"><i class="fas fa-user-tie"></i></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-gray-800">رفع أستاذ (فتح الوصول)</h3><p class="text-xs text-gray-500">بدون حاجة لكود</p></div>
                         </button>
                         <button onclick="openAdminView('codes')" class="bg-gray-800 p-5 rounded-2xl shadow-lg border-l-4 border-yellow-400 flex items-center gap-4 active:scale-95 transition">
                             <div class="w-12 h-12 bg-gray-700 text-yellow-400 rounded-full flex items-center justify-center text-xl"><i class="fas fa-key"></i></div>
-                            <div class="text-right flex-1"><h3 class="font-bold text-white">إدارة الأكواد</h3><p class="text-xs text-gray-400">توليد، حذف، متابعة الحالات</p></div>
+                            <div class="text-right flex-1"><h3 class="font-bold text-white">إدارة الأكواد</h3></div>
                         </button>
                     </div>
                 </div>
@@ -904,19 +1451,17 @@
                 <div class="flex-1 overflow-y-auto p-4" id="subViewContent"></div>
             `;
             subView.classList.remove('hidden');
-            
             const content = document.getElementById('subViewContent');
             const title = document.getElementById('subViewTitle');
 
             if (type === 'subjects') {
                 title.innerText = 'إدارة المواد';
                 content.innerHTML = `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border">
                         <select id="v_sub_grade" class="w-full mb-2 border rounded-xl p-3 bg-gray-50"><option value="السادس العلمي">السادس العلمي</option><option value="الثالث متوسط">الثالث متوسط</option></select>
                         <input type="text" id="v_sub_name" placeholder="اسم المادة" class="w-full mb-3 border rounded-xl p-3 bg-gray-50">
                         <button onclick="v_addSubject()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl">إضافة المادة</button>
                     </div>
-                    <h3 class="font-bold mb-3 text-gray-700">المواد الحالية:</h3>
                     <div class="space-y-2">
                         ${dbData.subjects.map(s => `
                             <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
@@ -926,11 +1471,11 @@
                         `).join('')}
                     </div>
                 `;
-            } 
+            }
             else if (type === 'teachers') {
                 title.innerText = 'إدارة الأساتذة';
                 content.innerHTML = `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border">
                         <select id="v_tch_sub" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
                             ${dbData.subjects.map(s => `<option value="${s.id}">${s.grade} - ${s.name}</option>`).join('')}
                         </select>
@@ -949,7 +1494,7 @@
                                     <div><div class="font-bold text-sm">${t.name}</div><div class="text-xs text-gray-500">${t.grade} - ${subName}</div></div>
                                 </div>
                                 <button onclick="v_delItem('teachers', '${t.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
-                            </div>`
+                            </div>`;
                         }).join('')}
                     </div>
                 `;
@@ -957,11 +1502,11 @@
             else if (type === 'chapters') {
                 title.innerText = 'إدارة الفصول';
                 content.innerHTML = `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border">
                         <select id="v_chp_tch" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
                             ${dbData.teachers.map(t => `<option value="${t.id}">${t.name} (${t.grade})</option>`).join('')}
                         </select>
-                        <input type="text" id="v_chp_name" placeholder="اسم الفصل (مثال: الفصل الأول)" class="w-full mb-3 border rounded-xl p-3 bg-gray-50">
+                        <input type="text" id="v_chp_name" placeholder="اسم الفصل" class="w-full mb-3 border rounded-xl p-3 bg-gray-50">
                         <button onclick="v_addChapter()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl">إضافة الفصل</button>
                     </div>
                     <div class="space-y-2">
@@ -971,7 +1516,7 @@
                             <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
                                 <div><div class="font-bold text-sm">${c.name}</div><div class="text-xs text-gray-500">أ. ${tName}</div></div>
                                 <button onclick="v_delItem('chapters', '${c.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
-                            </div>`
+                            </div>`;
                         }).join('')}
                     </div>
                 `;
@@ -979,7 +1524,7 @@
             else if (type === 'lectures') {
                 title.innerText = 'إدارة المحاضرات';
                 content.innerHTML = `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-gray-200">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border">
                         <select id="v_lec_chp" class="w-full mb-2 border rounded-xl p-3 bg-gray-50 text-sm">
                             ${dbData.chapters.map(c => {
                                 const t = dbData.teachers.find(x => x.id === c.teacher);
@@ -987,8 +1532,8 @@
                             }).join('')}
                         </select>
                         <input type="text" id="v_lec_name" placeholder="اسم المحاضرة" class="w-full mb-2 border rounded-xl p-3 bg-gray-50">
-                        <input type="url" id="v_lec_link" placeholder="رابط رسالة التلكرام" class="w-full mb-2 border rounded-xl p-3 bg-gray-50 text-left" dir="ltr">
-                        <textarea id="v_lec_details" placeholder="التفاصيل الاضافية للمحاضرة..." class="w-full mb-3 border rounded-xl p-3 bg-gray-50 h-24 resize-none"></textarea>
+                        <input type="url" id="v_lec_link" placeholder="رابط الفيديو" class="w-full mb-2 border rounded-xl p-3 bg-gray-50 text-left" dir="ltr">
+                        <textarea id="v_lec_details" placeholder="التفاصيل..." class="w-full mb-3 border rounded-xl p-3 bg-gray-50 h-24 resize-none"></textarea>
                         <button onclick="v_addLecture()" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl">نشر المحاضرة</button>
                     </div>
                     <div class="space-y-2">
@@ -1001,41 +1546,115 @@
                     </div>
                 `;
             }
+            else if (type === 'exams') {
+                title.innerText = 'إدارة نماذج الاختبارات';
+                content.innerHTML = `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">اختر المحاضرة:</label>
+                        <select id="v_exam_lec" class="w-full mb-3 border rounded-xl p-3 bg-gray-50 text-sm">
+                            ${dbData.lectures.map(l => {
+                                const t = dbData.teachers.find(x => x.id === l.teacher);
+                                return `<option value="${l.id}">${l.name} — أ. ${t?.name || ''}</option>`;
+                            }).join('')}
+                        </select>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">رقم النموذج:</label>
+                        <select id="v_exam_num" class="w-full mb-3 border rounded-xl p-3 bg-gray-50">
+                            <option value="1">النموذج 1</option>
+                            <option value="2">النموذج 2</option>
+                            <option value="3">النموذج 3</option>
+                            <option value="4">النموذج 4</option>
+                        </select>
+                        <label class="block text-sm text-gray-500 mb-1">صورة نموذج الأسئلة:</label>
+                        <input type="file" id="v_exam_img" accept="image/*" class="w-full mb-3 border rounded-xl p-2 bg-gray-50 text-sm">
+                        <button onclick="v_addExam()" class="w-full bg-orange-600 text-white font-bold py-3 rounded-xl">رفع/تحديث النموذج</button>
+                    </div>
+                    <h3 class="font-bold mb-3 text-gray-700">النماذج المرفوعة:</h3>
+                    <div class="space-y-3">
+                        ${dbData.lectures.map(l => {
+                            const exs = dbData.exams.filter(e => e.lecture === l.id);
+                            if(exs.length === 0) return '';
+                            return `
+                            <div class="bg-white p-3 rounded-xl border shadow-sm">
+                                <div class="font-bold text-sm mb-2">${l.name}</div>
+                                <div class="grid grid-cols-4 gap-2">
+                                    ${[1,2,3,4].map(n => {
+                                        const ex = exs.find(e => e.number === n);
+                                        if(ex) {
+                                            return `
+                                            <div class="relative">
+                                                <img src="${ex.imageUrl}" class="w-full aspect-square object-cover rounded-lg border-2 border-orange-400">
+                                                <div class="absolute top-1 right-1 bg-orange-600 text-white text-[10px] font-bold rounded px-1.5 py-0.5">${n}</div>
+                                                <button onclick="v_delExam('${ex.id}')" class="absolute -top-1 -left-1 w-5 h-5 bg-red-500 text-white rounded-full text-[10px] flex items-center justify-center"><i class="fas fa-times"></i></button>
+                                            </div>`;
+                                        }
+                                        return `<div class="w-full aspect-square border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center text-gray-300 text-xs">${n}</div>`;
+                                    }).join('')}
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            else if (type === 'teacherAccess') {
+                title.innerText = 'رفع أستاذ (فتح وصول)';
+                content.innerHTML = `
+                    <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border">
+                        <label class="block text-sm font-bold text-gray-700 mb-1">اختر الأستاذ:</label>
+                        <select id="v_ta_teacher" class="w-full mb-3 border rounded-xl p-3 bg-gray-50 text-sm">
+                            ${dbData.teachers.map(t => `<option value="${t.id}">${t.grade} - ${t.name}</option>`).join('')}
+                        </select>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">بريد الأستاذ الإلكتروني:</label>
+                        <input type="email" id="v_ta_email" placeholder="teacher@example.com" dir="ltr" class="w-full mb-3 border rounded-xl p-3 bg-gray-50 text-left">
+                        <button onclick="v_grantTeacherAccess()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl">رفع الأستاذ</button>
+                        <p class="text-xs text-gray-400 mt-2">عندما يسجل الأستاذ بنفس البريد، سيفتح له المحاضرات تلقائياً بدون كود.</p>
+                    </div>
+                    <h3 class="font-bold mb-3 text-gray-700">الأساتذة المرفوعين:</h3>
+                    <div class="space-y-2">
+                        ${dbData.teachers.filter(t => t.ownerEmail).map(t => `
+                            <div class="bg-white p-3 rounded-xl border flex justify-between items-center shadow-sm">
+                                <div>
+                                    <div class="font-bold text-sm">${t.name}</div>
+                                    <div class="text-xs text-gray-500" dir="ltr">${t.ownerEmail}</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-1 rounded">${t.subscribersCount || 0} طالب</span>
+                                    <button onclick="v_removeTeacherAccess('${t.id}')" class="text-red-500 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
             else if (type === 'codes') {
                 title.innerText = 'إدارة الأكواد';
-                
-                // Fetch codes freshly
-                let html = '<div class="text-center py-10"><div class="loader mx-auto border-indigo-500 border-t-transparent"></div></div>';
-                content.innerHTML = html;
-                
+                content.innerHTML = '<div class="text-center py-10"><div class="loader mx-auto border-indigo-500 border-t-transparent"></div></div>';
                 try {
                     const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'codes'));
                     dbData.codes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    
                     content.innerHTML = `
                         <div class="bg-gray-800 p-4 rounded-2xl shadow-lg mb-6 border border-gray-700">
                             <select id="v_cod_tch" class="w-full mb-3 border border-gray-600 rounded-xl p-3 bg-gray-700 text-white">
                                 ${dbData.teachers.map(t => `<option value="${t.id}">${t.grade} - ${t.name}</option>`).join('')}
                             </select>
-                            <button onclick="v_addCode()" class="w-full bg-yellow-500 text-gray-900 font-bold py-3 rounded-xl active:bg-yellow-600 shadow-md">إنشاء كود جديد (لاستخدام واحد)</button>
+                            <button onclick="v_addCode()" class="w-full bg-yellow-500 text-gray-900 font-bold py-3 rounded-xl">إنشاء كود طموح (لاستخدام واحد)</button>
                         </div>
                         <h3 class="font-bold mb-3 text-gray-700">سجل الأكواد:</h3>
                         <div class="space-y-3">
-                            ${dbData.codes.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map(c => {
+                            ${dbData.codes.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).map(c => {
                                 const tName = dbData.teachers.find(x => x.id === c.teacher)?.name || 'مجهول';
                                 const statusClass = c.used ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700';
-                                const statusText = c.used ? 'مستخدم (غير نشط)' : 'جديد (نشط)';
+                                const statusText = c.used ? 'مستخدم' : 'جديد';
                                 return `
-                                <div class="bg-white p-4 rounded-xl border flex flex-col shadow-sm gap-2">
+                                <div class="bg-white p-4 rounded-xl border shadow-sm space-y-2">
                                     <div class="flex justify-between items-start">
                                         <div class="font-mono font-bold text-lg tracking-widest text-gray-800 select-all">${c.id}</div>
                                         <span class="text-[10px] font-bold px-2 py-1 rounded ${statusClass}">${statusText}</span>
                                     </div>
                                     <div class="text-xs text-gray-500 border-b pb-2">أ. ${tName}</div>
-                                    <button onclick="v_delCode('${c.id}', '${c.usedBy || ''}', '${c.teacher}')" class="w-full mt-1 bg-red-50 text-red-600 text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-2">
-                                        <i class="fas fa-trash"></i> حذف الكود ${c.used ? '(وإلغاء الصلاحية)' : ''}
+                                    <button onclick="v_delCode('${c.id}', '${c.usedBy || ''}', '${c.teacher}')" class="w-full bg-red-50 text-red-600 text-xs font-bold py-2 rounded-lg">
+                                        <i class="fas fa-trash"></i> حذف الكود
                                     </button>
-                                </div>`
+                                </div>`;
                             }).join('')}
                         </div>
                     `;
@@ -1045,6 +1664,7 @@
             }
         };
 
+        // ================== ADMIN ACTIONS ==================
         window.v_addSubject = async () => {
             const grade = document.getElementById('v_sub_grade').value;
             const name = document.getElementById('v_sub_name').value.trim();
@@ -1062,14 +1682,12 @@
             const name = document.getElementById('v_tch_name').value.trim();
             const imgFile = document.getElementById('v_tch_img').files[0];
             if(!name) return showToast('اكتب الاسم', 'error');
-            
             let base64Img = null;
             if(imgFile) base64Img = await fileToBase64(imgFile);
-
             const subject = dbData.subjects.find(s => s.id === subId);
             try {
                 const docRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'teachers'));
-                const data = { grade: subject.grade, subject: subId, name, image: base64Img };
+                const data = { grade: subject.grade, subject: subId, name, image: base64Img, subscribersCount: 0 };
                 await setDoc(docRef, data);
                 dbData.teachers.push({ id: docRef.id, ...data });
                 showToast('تم'); openAdminView('teachers');
@@ -1106,10 +1724,68 @@
             } catch(e) { showToast('خطأ', 'error'); }
         };
 
+        window.v_addExam = async () => {
+            const lectureId = document.getElementById('v_exam_lec').value;
+            const num = parseInt(document.getElementById('v_exam_num').value);
+            const file = document.getElementById('v_exam_img').files[0];
+            if(!file) return showToast('اختر صورة', 'error');
+            const b64 = await fileToBase64(file);
+            const lecture = dbData.lectures.find(l => l.id === lectureId);
+            try {
+                // ابحث عن نموذج موجود بنفس المحاضرة والرقم
+                const existing = dbData.exams.find(e => e.lecture === lectureId && e.number === num);
+                if(existing) {
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'exams', existing.id), { imageUrl: b64, updatedAt: new Date().toISOString() });
+                    existing.imageUrl = b64;
+                } else {
+                    const docRef = doc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'exams'));
+                    const data = { lecture: lectureId, teacher: lecture.teacher, number: num, imageUrl: b64, createdAt: new Date().toISOString() };
+                    await setDoc(docRef, data);
+                    dbData.exams.push({ id: docRef.id, ...data });
+                }
+                showToast('تم رفع النموذج'); openAdminView('exams');
+            } catch(e) { console.error(e); showToast('خطأ', 'error'); }
+        };
+
+        window.v_delExam = async (id) => {
+            if(!confirm('حذف النموذج؟')) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'exams', id));
+                dbData.exams = dbData.exams.filter(x => x.id !== id);
+                showToast('تم'); openAdminView('exams');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
+        window.v_grantTeacherAccess = async () => {
+            const teacherId = document.getElementById('v_ta_teacher').value;
+            const email = document.getElementById('v_ta_email').value.trim().toLowerCase();
+            if(!email) return showToast('أدخل البريد', 'error');
+            try {
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'teachers', teacherId), { ownerEmail: email });
+                // ابحث عن مستخدم بنفس البريد وحدث ملفه
+                const usersQ = query(collection(db, 'artifacts', APP_ID, 'users'));
+                // لا يمكن الاستعلام بالبريد مباشرة، نحتاج نجرب من الـ auth
+                // الحل: نخزن البريد في بيانات الأستاذ، وعندما يسجل الأستاذ نتحقق
+                const t = dbData.teachers.find(x => x.id === teacherId);
+                if(t) t.ownerEmail = email;
+                showToast('تم رفع الأستاذ'); openAdminView('teacherAccess');
+            } catch(e) { console.error(e); showToast('خطأ', 'error'); }
+        };
+
+        window.v_removeTeacherAccess = async (teacherId) => {
+            if(!confirm('إزالة وصول الأستاذ؟')) return;
+            try {
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'teachers', teacherId), { ownerEmail: null });
+                const t = dbData.teachers.find(x => x.id === teacherId);
+                if(t) t.ownerEmail = null;
+                showToast('تم'); openAdminView('teacherAccess');
+            } catch(e) { showToast('خطأ', 'error'); }
+        };
+
         window.v_addCode = async () => {
             const teacherId = document.getElementById('v_cod_tch').value;
             const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
-            const codeId = `DARB-${randomStr}`;
+            const codeId = `TAMOUH-${randomStr}`;
             try {
                 await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'codes', codeId), {
                     teacher: teacherId, used: false, usedBy: null, createdAt: new Date().toISOString()
@@ -1128,16 +1804,54 @@
         };
 
         window.v_delCode = async (codeId, usedByUserId, teacherId) => {
-            if(!confirm('هل أنت متأكد؟ إذا كان مستخدماً سيتم سحب الصلاحية من الطالب.')) return;
+            if(!confirm('تأكيد الحذف؟ إذا كان مستخدماً ستسحب الصلاحية.')) return;
             try {
                 if(usedByUserId && teacherId) {
-                    // سحب الصلاحية
                     await deleteDoc(doc(db, 'artifacts', APP_ID, 'users', usedByUserId, 'subscriptions', teacherId));
+                    // إنقاص العداد
+                    const tRef = doc(db, 'artifacts', APP_ID, 'public', 'data', 'teachers', teacherId);
+                    const tSnap = await getDoc(tRef);
+                    if(tSnap.exists()) {
+                        const c = tSnap.data().subscribersCount || 0;
+                        await updateDoc(tRef, { subscribersCount: Math.max(0, c - 1) });
+                    }
                 }
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'codes', codeId));
-                showToast('تم حذف الكود وإلغاء الصلاحية (إن وجدت)'); openAdminView('codes');
+                showToast('تم الحذف'); openAdminView('codes');
             } catch(e) { showToast('خطأ بالحذف', 'error'); }
         };
+
+        // ================== TEACHER AUTO-ACCESS CHECK ==================
+        // عند تسجيل الدخول، نتحقق إذا البريد مطابق لبريد أستاذ
+        async function checkTeacherAccess() {
+            if(!currentUser) return;
+            try {
+                const snap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'teachers'));
+                const matched = snap.docs.find(d => (d.data().ownerEmail || '').toLowerCase() === currentUser.email.toLowerCase());
+                if(matched) {
+                    const tid = matched.id;
+                    if(!dbData.mySubscriptions.includes(tid)) {
+                        await setDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'subscriptions', tid), { active: true, isTeacher: true, at: new Date().toISOString() });
+                        dbData.mySubscriptions.push(tid);
+                    }
+                    // تحديث ملف الطالب ليكون أستاذاً
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'users', currentUser.uid, 'profile', 'data'), {
+                        isTeacher: true, teacherId: tid
+                    });
+                    userData.isTeacher = true;
+                    userData.teacherId = tid;
+                }
+            } catch(e) { console.warn('Teacher check failed', e); }
+        }
+
+        // نستدعيها بعد fetchInitialData
+        const _origFetch = fetchInitialData;
+        fetchInitialData = async function() {
+            await _origFetch();
+            await checkTeacherAccess();
+            if(currentTab === 'lectures') renderLecturesFlow();
+        };
+
     </script>
 </body>
 </html>
