@@ -3,109 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق تشريح الأسنان 3D</title>
+    <title>تطبيق تشريح الأسنان 3D - النسخة الاحترافية</title>
     <style>
-        /* إعدادات التصميم الأساسية وتوافق الهواتف */
         body { 
             margin: 0; 
             overflow: hidden; 
-            background: linear-gradient(135deg, #1e1e1e, #000000); /* خلفية احترافية */
+            background: linear-gradient(135deg, #121212, #2c3e50); 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; /* منع التكبير العشوائي عند اللمس */
+            touch-action: none; 
         }
-        #canvas-container { 
-            width: 100vw; 
-            height: 100vh; 
-        }
+        #canvas-container { width: 100vw; height: 100vh; }
         
-        /* شاشة التحميل (Loader) */
         #loader {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             color: #00ff88; font-size: 16px; font-weight: bold; z-index: 20;
-            background: rgba(0,0,0,0.8); padding: 15px 30px; border-radius: 8px;
-            text-align: center; border: 1px solid #00ff88;
+            background: rgba(0,0,0,0.8); padding: 20px 40px; border-radius: 12px;
+            text-align: center; border: 1px solid #00ff88; box-shadow: 0 0 20px rgba(0,255,136,0.2);
         }
 
-        /* نافذة المعلومات التي تظهر عند الضغط على السن */
         #info-card {
             position: absolute; bottom: 20px; left: 20px; right: 20px;
-            background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: none; z-index: 10;
-            border-top: 4px solid #007bff; max-height: 40vh; overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); display: none; z-index: 10;
+            border-top: 5px solid #3498db; max-height: 40vh; overflow-y: auto;
         }
-        #info-card h3 { margin: 0 0 10px 0; color: #111; font-size: 20px; }
-        #info-card p { margin: 0 0 15px 0; color: #444; font-size: 15px; line-height: 1.6; }
+        #info-card h3 { margin: 0 0 5px 0; color: #2c3e50; font-size: 22px; }
+        #info-card h4 { margin: 0 0 15px 0; color: #7f8c8d; font-size: 14px; font-weight: normal; }
+        #info-card p { margin: 0 0 20px 0; color: #34495e; font-size: 15px; line-height: 1.6; font-weight: 500;}
+        
         .close-btn {
             background: #e74c3c; color: white; border: none; padding: 12px;
             border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold;
+            transition: 0.3s;
         }
+        .close-btn:active { transform: scale(0.98); background: #c0392b; }
 
-        /* نافذة المساعدة لاكتشاف أسماء الأسنان البرمجية */
         #debug-panel {
-            position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7);
-            color: #fff; padding: 10px; border-radius: 6px; font-size: 13px; z-index: 10;
-            border: 1px solid #ffcc00; display: none; direction: ltr; text-align: left;
+            position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8);
+            color: #f1c40f; padding: 12px; border-radius: 8px; font-size: 14px; z-index: 10;
+            border: 1px solid #f1c40f; display: none; direction: ltr; text-align: left; font-family: monospace;
         }
     </style>
     
-    <!-- مكتبات Three.js (الإصدار r128 مستقر ويدعم gltf بشكل ممتاز) -->
+    <!-- مكتبات Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
-    <div id="loader">جاري تحميل النموذج الهندسي...<br><span id="loading-percent">0%</span></div>
+    <div id="loader">جاري تهيئة المجسم الطبي...<br><span id="loading-percent" style="font-size:24px; display:block; margin-top:10px;">0%</span></div>
     
-    <!-- هذه النافذة ستعرض لك اسم الجزء الملموس لتضيفه في الكود لاحقاً -->
-    <div id="debug-panel">Mesh Name: <span id="debug-name-val">None</span></div>
+    <div id="debug-panel">Mesh Name: <br><strong id="debug-name-val" style="color:#fff; font-size: 16px;">None</strong><br><br><span style="color:#ccc; font-size:12px;">Copy this name to teethData</span></div>
     
     <div id="info-card">
-        <h3 id="tooth-title">اسم السن</h3>
+        <h3 id="tooth-title-ar">الاسم بالعربي</h3>
+        <h4 id="tooth-title-en">English Name</h4>
         <p id="tooth-desc">التفاصيل الطبية للسن.</p>
-        <button class="close-btn" onclick="closeInfo()">إغلاق المعلومات</button>
+        <button class="close-btn" onclick="closeInfo()">إغلاق</button>
     </div>
 
     <div id="canvas-container"></div>
 
     <script>
-        // 1. إعداد المشهد الأساسي
+        // 1. الإعداد الأساسي
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        // تحسين الأداء للهواتف وضبط الألوان لتطابق الصور الواقعية
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
         renderer.outputEncoding = THREE.sRGBEncoding; 
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 2. إعداد الإضاءة (مهمة لظهور تفاصيل اللثة والأسنان)
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // 2. الإضاءة
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(5, 10, 7);
         scene.add(directionalLight);
 
-        // 3. أداة التحكم (الدوران والتقريب بإصبعين)
+        // 3. أداة التحكم
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true; 
         controls.dampingFactor = 0.05;
 
         // ==========================================
-        // 4. قاعدة بيانات الأسنان (ستقوم بتعديلها لاحقاً)
+        // 4. قاعدة البيانات (أكمل استبدال الأسماء الوهمية بالأسماء الحقيقية)
         // ==========================================
         const teethData = {
-            // مثال: استبدل 'Object_1' بالاسم الذي يظهر لك في الشاشة عند الضغط
-            "Object_1": { title: "القاطع المركزي العلوي", desc: "أحد الأسنان الأمامية، وظيفته الأساسية قطع الطعام." },
-            "Object_2": { title: "الناب السفلي", desc: "يتميز بجذر طويل وقوي، وظيفته تمزيق الطعام." }
+            // مثال على سن قمت أنت بتحديده مسبقاً (هذا جاهز كمثال لك)
+            "Plane003_Material001_0": { 
+                titleAr: "القاطع المركزي العلوي", 
+                titleEn: "Maxillary Central Incisor",
+                desc: "يقع في مقدمة الفك العلوي، وظيفته الأساسية هي تقطيع الطعام ويمتلك جذراً واحداً." 
+            },
+            
+            // الأسنان العلوية (يجب استبدال الكلمات العربية باسم الـ Mesh الذي يظهر لك بالشاشة)
+            "ضع_اسم_المجسم_هنا_1": { titleAr: "القاطع الجانبي العلوي", titleEn: "Maxillary Lateral Incisor", desc: "يساعد في تقطيع الطعام ويقع بجانب القاطع المركزي." },
+            "ضع_اسم_المجسم_هنا_2": { titleAr: "الناب العلوي", titleEn: "Maxillary Canine", desc: "يمتلك أطول جذر في فم الإنسان، وظيفته تمزيق الطعام القاسي." },
+            "ضع_اسم_المجسم_هنا_3": { titleAr: "الضاحك الأول العلوي", titleEn: "Maxillary 1st Premolar", desc: "يحتوي عادة على جذرين، ويستخدم لبدء طحن الطعام." },
+            "ضع_اسم_المجسم_هنا_4": { titleAr: "الضاحك الثاني العلوي", titleEn: "Maxillary 2nd Premolar", desc: "يشبه الضاحك الأول ولكن بجذر واحد عادة، يساعد في طحن الطعام." },
+            "ضع_اسم_المجسم_هنا_5": { titleAr: "الرحى الأولى العلوية", titleEn: "Maxillary 1st Molar", desc: "أكبر الأسنان العلوية، يستخدم لطحن الطعام بكفاءة عالية." },
+            "ضع_اسم_المجسم_هنا_6": { titleAr: "الرحى الثانية العلوية", titleEn: "Maxillary 2nd Molar", desc: "يقع خلف الرحى الأولى ويقوم بنفس وظيفة الطحن." },
+            "ضع_اسم_المجسم_هنا_7": { titleAr: "ضرس العقل العلوي", titleEn: "Maxillary 3rd Molar (Wisdom Tooth)", desc: "آخر الأسنان بزوغاً، قد لا يظهر عند بعض الأشخاص." },
+
+            // الأسنان السفلية
+            "ضع_اسم_المجسم_هنا_8": { titleAr: "القاطع المركزي السفلي", titleEn: "Mandibular Central Incisor", desc: "أصغر الأسنان في فم الإنسان، يقع في منتصف الفك السفلي." },
+            "ضع_اسم_المجسم_هنا_9": { titleAr: "القاطع الجانبي السفلي", titleEn: "Mandibular Lateral Incisor", desc: "أكبر قليلاً من القاطع المركزي السفلي ويجاوره." },
+            "ضع_اسم_المجسم_هنا_10": { titleAr: "الناب السفلي", titleEn: "Mandibular Canine", desc: "قوي جداً ويستخدم لتمزيق الطعام وتمزيق الألياف." },
+            "ضع_اسم_المجسم_هنا_11": { titleAr: "الضاحك الأول السفلي", titleEn: "Mandibular 1st Premolar", desc: "أصغر من الضاحك الثاني، يساعد في تمزيق وطحن الطعام." },
+            "ضع_اسم_المجسم_هنا_12": { titleAr: "الضاحك الثاني السفلي", titleEn: "Mandibular 2nd Premolar", desc: "يساهم بشكل كبير في طحن الطعام قبل وصوله للأضراس." },
+            "ضع_اسم_المجسم_هنا_13": { titleAr: "الرحى الأولى السفلية", titleEn: "Mandibular 1st Molar", desc: "أول ضرس دائم يظهر في الفم، ويعتبر حجر الأساس في الإطباق." },
+            "ضع_اسم_المجسم_هنا_14": { titleAr: "الرحى الثانية السفلية", titleEn: "Mandibular 2nd Molar", desc: "يقوم بطحن ومضغ الطعام بقوة كبيرة." },
+            "ضع_اسم_المجسم_هنا_15": { titleAr: "ضرس العقل السفلي", titleEn: "Mandibular 3rd Molar (Wisdom Tooth)", desc: "الضرس الأخير، يسبب أحياناً مشاكل انطمار ويحتاج قلع." }
+            
+            // يمكنك نسخ الأسطر أعلاه للجهة اليمنى واليسرى (لأن لكل فك جهتين يمين ويسار).
         };
 
-        // 5. تحميل مجسم الـ GLTF
         let model;
         const loader = new THREE.GLTFLoader();
-        
-        // مسار الملف كما هو موجود في جيثوب
         const modelUrl = 'scene.gltf'; 
 
         loader.load(
@@ -113,49 +129,53 @@
             function (gltf) {
                 model = gltf.scene;
                 
-                // حساب أبعاد المجسم وتوسيطه تلقائياً
-                const box = new THREE.Box3().setFromObject(model);
+                // --- الكود الذكي لحذف النموذجين المغلقين وإبقاء المفتوح فقط ---
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        // إذا كان اسم المجسم يحتوي على Plane001 أو Plane002 نقوم بإخفائه وحذفه من العرض
+                        if (child.name.includes('Plane001') || child.name.includes('Plane002')) {
+                            child.visible = false;
+                        }
+                    }
+                });
+                
+                // حساب الحجم والتوسيط فقط للأجزاء المرئية (الفك المفتوح) لتحسين الكاميرا
+                const box = new THREE.Box3();
+                model.traverse((child) => {
+                    if (child.isMesh && child.visible) {
+                        box.expandByObject(child);
+                    }
+                });
+
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
-                
-                // ضبط حجم المجسم ليتناسب مع الكاميرا
                 const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 5 / maxDim;
+                const scale = 5 / maxDim; // تكبير الفك لملء الشاشة
                 model.scale.set(scale, scale, scale);
-                model.position.sub(center.multiplyScalar(scale)); // التوسيط
+                model.position.sub(center.multiplyScalar(scale)); 
                 
                 scene.add(model);
-                
-                // وضع الكاميرا في مسافة مناسبة لرؤية المجسم كاملاً
-                camera.position.set(0, 0, 10);
-                
+                camera.position.set(0, 0, 8); // تقريب الكاميرا أكثر
                 document.getElementById('loader').style.display = 'none';
             },
             function (xhr) {
-                // تحديث نسبة التحميل
                 if (xhr.total > 0) {
                     const percent = Math.round((xhr.loaded / xhr.total) * 100);
                     document.getElementById('loading-percent').innerText = percent + '%';
                 }
-            },
-            function (error) {
-                console.error('خطأ في تحميل النموذج:', error);
-                document.getElementById('loader').innerHTML = '<span style="color:#e74c3c">فشل تحميل النموذج! تأكد من رفع الملفات لجيثوب بشكل صحيح.</span>';
             }
         );
 
-        // 6. نظام اكتشاف اللمس (Raycaster)
+        // 6. نظام اللمس والاكتشاف
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
-        // دعم الهواتف والشاشات اللمسية
         window.addEventListener('touchstart', (e) => {
             if(e.touches.length > 0 && e.target.tagName !== 'BUTTON') {
                 processClick(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: false });
 
-        // دعم الماوس (في حال الاختبار من الكمبيوتر)
         window.addEventListener('click', (e) => {
             if(e.target.tagName !== 'BUTTON') {
                 processClick(e.clientX, e.clientY);
@@ -165,21 +185,18 @@
         function processClick(clientX, clientY) {
             if (!model) return;
 
-            // تحويل إحداثيات الشاشة إلى إحداثيات 3D
             mouse.x = (clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
             
-            // البحث عن الكائن الذي تقاطع معه اللمس
-            const intersects = raycaster.intersectObjects(model.children, true);
+            // تجاهل المجسمات المخفية (النماذج المحذوفة) عند الضغط
+            const intersects = raycaster.intersectObjects(model.children, true).filter(obj => obj.object.visible);
 
             if (intersects.length > 0) {
-                // نأخذ أول كائن (الأقرب للكاميرا)
-                const clickedObject = intersects[0].object;
-                const meshName = clickedObject.name;
+                const meshName = intersects[0].object.name;
 
-                // عرض الاسم البرمجي لتتمكن من نسخه
+                // عرض الاسم للنسخ
                 document.getElementById('debug-panel').style.display = 'block';
                 document.getElementById('debug-name-val').innerText = meshName;
 
@@ -187,22 +204,24 @@
             }
         }
 
-        // 7. دالة عرض معلومات السن
         function showToothInfo(meshName) {
             const card = document.getElementById('info-card');
-            const titleEl = document.getElementById('tooth-title');
+            const titleAr = document.getElementById('tooth-title-ar');
+            const titleEn = document.getElementById('tooth-title-en');
             const descEl = document.getElementById('tooth-desc');
 
             if (teethData[meshName]) {
-                // إذا كان السن مضافاً في قاعدة البيانات
-                titleEl.innerText = teethData[meshName].title;
+                titleAr.innerText = teethData[meshName].titleAr;
+                titleEn.innerText = teethData[meshName].titleEn;
                 descEl.innerText = teethData[meshName].desc;
-                titleEl.style.color = '#007bff';
+                
+                titleAr.style.color = '#2980b9';
+                titleEn.style.display = 'block';
             } else {
-                // إذا لم تقم بإضافته بعد
-                titleEl.innerText = "جزء غير مسجل";
-                descEl.innerText = `هذا الجزء يحمل الاسم البرمجي "${meshName}". يرجى إضافته إلى متغير teethData داخل الكود لتظهر معلوماته.`;
-                titleEl.style.color = '#e74c3c';
+                titleAr.innerText = "هذا الجزء غير مُعرف بعد!";
+                titleEn.style.display = 'none';
+                descEl.innerText = `قم بنسخ هذا الاسم (${meshName}) من المربع الأصفر أعلى الشاشة، وضعه في متغير teethData لتفعيل هذا السن.`;
+                titleAr.style.color = '#e74c3c';
             }
 
             card.style.display = 'block';
@@ -213,17 +232,15 @@
             document.getElementById('debug-panel').style.display = 'none';
         }
 
-        // 8. الاستجابة لتغير حجم الشاشة (تدوير الهاتف)
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // 9. حلقة التحديث المستمر
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // ضروري لحركة الكاميرا الناعمة
+            controls.update();
             renderer.render(scene, camera);
         }
         animate();
