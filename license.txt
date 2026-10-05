@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gameready human mouth and tongue
+* source:	https://sketchfab.com/3d-models/gameready-human-mouth-and-tongue-6c25fc725d1c404c82ec7499e4f7e041
+* author:	Rostokino Interactive (https://sketchfab.com/antonksavie)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gameready human mouth and tongue" (https://sketchfab.com/3d-models/gameready-human-mouth-and-tongue-6c25fc725d1c404c82ec7499e4f7e041) by Rostokino Interactive (https://sketchfab.com/antonksavie) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
